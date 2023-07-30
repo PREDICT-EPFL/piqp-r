@@ -1,0 +1,3 @@
+[submodule "src/piqp"]
+	path = src/piqp
+	url = git@github.com:PREDICT-EPFL/piqp.git
