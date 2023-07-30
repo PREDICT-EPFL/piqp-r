@@ -1,2 +1,3 @@
 # piqp
-Proximal Interior Point Quadratic Programming solver from EPFL
+
+R interface to [Proximal Interior Point Quadratic Programming solver](https://predict-epfl.github.io/piqp/) from EPFL.
