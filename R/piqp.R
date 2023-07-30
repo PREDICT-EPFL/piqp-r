@@ -26,7 +26,7 @@
 #' @param x_lb a numeric vector of lower bounds, default `NULL`
 #'   indicating `-Inf` for all variables, otherwise should be number
 #'   of variables long
-#' @param x_lb a numeric vector of upper bounds, default `NULL`
+#' @param x_ub a numeric vector of upper bounds, default `NULL`
 #'   indicating `Inf` for all variables, otherwise should be number of
 #'   variables long
 #' @param control a list giving specific control parameters to use in
@@ -48,7 +48,7 @@
 #'   - `run_time` (total runtime, if so specified in settings)
 #'
 #' @importFrom Matrix sparseMatrix
-#' @seealso [piqp_control()], [status_descriptions()]
+#' @seealso [piqp_control()], [status_description()]
 #' @export piqp
 #'
 #' 
@@ -224,7 +224,7 @@ piqp_control <- function(
 }
 
 #' Return the solver status description string
-#' @param a valid solver return code
+#' @param code a valid solver return code
 #' @return a status description string
 #' @examples
 #' status_description(1) ## for solved problem

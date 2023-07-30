@@ -15,7 +15,6 @@ RoxygenNote: 7.2.3
 URL: https://bnaras.github.io/piqp
 BugReports: https://github.com/bnaras/piqp/issues
 LinkingTo: 
-    piqp,
     Rcpp,
     RcppEigen
 Suggests: 
@@ -25,4 +24,5 @@ Suggests:
     tinytest
 VignetteBuilder: knitr
 Imports: 
-    Matrix
+    Matrix,
+    Rcpp

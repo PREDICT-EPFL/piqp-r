@@ -7,7 +7,7 @@
 status_description(code)
 }
 \arguments{
-\item{a}{valid solver return code}
+\item{code}{a valid solver return code}
 }
 \value{
 a status description string

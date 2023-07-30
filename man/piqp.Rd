@@ -30,7 +30,11 @@ piqp(
 
 \item{h}{a numeric vector of the inequality right hand side}
 
-\item{x_lb}{a numeric vector of upper bounds, default \code{NULL}
+\item{x_lb}{a numeric vector of lower bounds, default \code{NULL}
+indicating \code{-Inf} for all variables, otherwise should be number
+of variables long}
+
+\item{x_ub}{a numeric vector of upper bounds, default \code{NULL}
 indicating \code{Inf} for all variables, otherwise should be number of
 variables long}
 
@@ -76,5 +80,5 @@ of symmetry for instance. This package accepts either
 matrices as in the \code{\link[slam:matrix]{slam::simple_triplet_matrix()}}
 }
 \seealso{
-\code{\link[=piqp_control]{piqp_control()}}, \code{\link[=status_descriptions]{status_descriptions()}}
+\code{\link[=piqp_control]{piqp_control()}}, \code{\link[=status_description]{status_description()}}
 }

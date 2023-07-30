@@ -7,7 +7,7 @@
 ^src/*.so
 ^inst/misc
 ^\.Rhistory
-^src/piqp\.git*
+^src/piqp/\.git*
 ^src/CHANGELOG
 ^src/piqp/CHANGELOG.md
 ^src/piqp/CMakeLists.txt
