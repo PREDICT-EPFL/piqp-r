@@ -1,4 +1,18 @@
 destination: docs
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left: [intro, reference, news]
+    right: [search, github]
+  components:
+    setup:
+      text: Introduction
+      href: articles/piqp.html
+
+
 authors:
   Balasubramanian Narasimhan:
     href: https://naras.su.domains/

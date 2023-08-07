@@ -20,7 +20,7 @@ library(piqp)
 
 ## 1. Introduction
 
-PIQP solves Quadratic Programs of the form
+PIQP solves quadratic programs of the form
 
 $$
 \begin{aligned}
@@ -36,12 +36,6 @@ with primal decision variables $x \in \mathbb{R}^n$, matrices $P\in
 \times n}$, and vectors $c \in \mathbb{R}^n$, $b \in \mathbb{R}^p$, $h
 \in \mathbb{R}^m$, $x_{lb} \in \mathbb{R}^n$, and $x_{ub} \in
 \mathbb{R}^n$.
-
-Note that PIQP can handle infinite box constraints well, i.e. when
-elements of $x_{lb}$ or $x_{ub}$ are $-\infty$ or $\infty$,
-respectively. On the contrary, infinite values in the general
-inequalities $Gx \leq h = \pm \infty$ can cause problems, i.e., they
-are converted internally to `-1e30` and `1e30`, respectively.
 
 ## 2. The Problem Solver Interface 
 
@@ -96,6 +90,13 @@ One can always construct the descriptive string for the status using:
 status_description(sol$status)
 ```
 
+Note that PIQP can handle infinite box constraints well, i.e. when elements of
+$x_{lb}$ or $x_{ub}$ are $-\infty$ or $\infty$, respectively. On the
+contrary, infinite values in the general inequalities $Gx \leq h = \pm
+\infty$ can cause problems, i.e., they are converted internally to
+`-1e30` and `1e30`, respectively.
+
+
 ## 3. The Solver Model Object
 
 Users who wish to solve QP problems will mostly use the `solve_piqp()`
@@ -132,7 +133,7 @@ Setting the lower bounds made the problem infeasible.
 model$update(b = c(5, 2))
 ```
 
-The error message correctly indicates that b has wrong dimensions. 
+The error message correctly indicates that `b` has wrong dimensions. 
 
 The methods exposed by the model object can be seen in the
 documentation for the object `piqp_model`.
@@ -151,7 +152,7 @@ instructions and cache locality can be exploited more efficiently, but
 for sparse problems the sparse interface and result in significant
 speedups.
 
-These interfaces can be requested explicitly via the `backend`
+Either interface can be requested explicitly via the `backend`
 parameter which can take on any value among `"dense"`, `"sparse"`, or
 `"auto"`, the default. The last value will automatically switch to a
 sparse interface if any of the supplied inputs ($A$, $P$, or $G$) is a
@@ -240,5 +241,6 @@ cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", s$info$primal_obj,
 ```
 
 Note the different status, which should always be checked in code. 
+
 
 
