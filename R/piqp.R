@@ -1,138 +1,306 @@
-#' @title Interface to 'piqp', a proximal interior point quadratic solver
+#' @title The PIQP Solver Model Class
 #'
-#' @description
+#' @description This class wraps around the PIQP C++ Solver and
+#'   exposes methods and fields of the C++ object. Users will never
+#'   need to directly create instances this class and should use the
+#'   more user-friendly functions [piqp()] and [solve_piqp()].
 #'
-#' PIQP solves linear programs (LPs) and quadratic programs (QPs). ,
-#'
-#' Minimize \deqn{\frac{1}{2}x^TPx + c^Tx} subject to \deqn{Ax = b},
-#'   \deqn{Gx \leq h}, \deqn{x_{lb} \leq x \leq x_{ub}}, where \eqn{x
-#'   \in R^n}, \eqn{h \in R^m}, \eqn{P = P^T} and
-#'   nonnegative-definite, \eqn{c \in R^n}, \eqn{A \in R^{p\times n}},
-#'   \eqn{G \in R^{m\times n}}, \eqn{b \in R^p}, \eqn{x{lb} \in R^n},
-#'   \eqn{x_{ub} \in R^n}.
-#' @details PIQP uses compressed column sparse (CSC) format
-#'   internally, which is the [Matrix::dgCMatrix-class] in the Matrix
-#'   package. So even P should be in CSC format, not taking advantage
-#'   of symmetry for instance. This package accepts either
-#'   [Matrix::dgcMatrix-class] class objects or the triplet format sparse
-#'   matrices as in the [slam::simple_triplet_matrix()]
-#' 
-#' @param A a matrix of constraint coefficients
-#' @param b a numeric vector giving the primal constraints
-#' @param c a numeric vector giving the primal objective
-#' @param P a symmetric positive semidefinite matrix
-#' @param G a matrix of inequality coefficients
-#' @param h a numeric vector of the inequality right hand side
-#' @param x_lb a numeric vector of lower bounds, default `NULL`
-#'   indicating `-Inf` for all variables, otherwise should be number
-#'   of variables long
-#' @param x_ub a numeric vector of upper bounds, default `NULL`
-#'   indicating `Inf` for all variables, otherwise should be number of
-#'   variables long
-#' @param control a list giving specific control parameters to use in
-#'   place of default values, with empty list indicating defaults
-#' @param interface whether to use sparse, or dense interface. Default
-#'   is "auto" mode will switch to sparse interface if any of the
-#'   specified matrices are sparse as in the Matrix package.
-#' @return named list
-#'   - `status` (status code)
-#'   - `x` (primal solution)
-#'   - `y` (dual solution of equality constraints)
-#'   - `z` (dual solution of inequality constraints)
-#'   - `z_lb` (dual solution of lower bound box constraints)
-#'   - `z_ub` (dual solution of upper bound box constraints)
-#'   - `pobj` (primal objective value)
-#'   - `dobj` (dual objective value)
-#'   - `dgap` (absolute duality gap absolute)
-#'   - `dgap_rel` (relative duality gap)
-#'   - `run_time` (total runtime, if so specified in settings)
+#' @importFrom Rcpp evalCpp
+#' @importFrom R6 R6Class
+piqp_model <-
+  R6::R6Class("piqp_model",
+              private = list(.solver_ptr = NULL, .dims = NULL, .dense_backend = NULL),          
+              public =
+                list(
+                  #' @description
+                  #' Create a new piqp_model object
+                  #' @param P dense or sparse matrix of class dgCMatrix or coercible into such, must be positive semidefinite
+                  #' @param c numeric vector
+                  #' @param A dense or sparse matrix of class dgCMatrix or coercible into such
+                  #' @param b numeric vector
+                  #' @param G dense or sparse matrix of class dgCMatrix or coercible into such
+                  #' @param h numeric vector
+                  #' @param x_lb a numeric vector of lower bounds
+                  #' @param x_ub a numeric vector of upper bounds
+                  #' @param settings list with optimization parameters
+                  #' @param dense_backend a flag indicating if the dense solver is to be used
+                  #' @param dims the dimensions of the problem, a named list containing `n`, `p` and `m`.
+                  #' @return a piqp_model object that can be used to solve the QP
+                  initialize = function(P, c, A, b, G, h, x_lb, x_ub, settings = list(), dense_backend, dims) {
+                    private$.dense_backend <- dense_backend
+                    private$.dims <- dims
+                    if (dense_backend) {
+                      private$.solver_ptr <- piqp_dense_setup(P, c, A, b, G, h, x_lb, x_ub, settings)
+                    } else {
+                      private$.solver_ptr <- piqp_sparse_setup(P, c, A, b, G, h, x_lb, x_ub, settings)
+                    }
+                  }
+                 ,
+                  #' @description
+                  #' Solve the QP model
+                  #' @return a list containing the solution
+                  solve = function() {
+                    solve_model(private$.solver_ptr, private$.dense_backend)                
+                  }
+                 ,
+                  #' @description
+                  #' Update the current piqp_model with new data
+                  #' @param P dense or sparse matrix of class dgCMatrix or coercible into such, must be positive semidefinite
+                  #' @param c numeric vector
+                  #' @param A dense or sparse matrix of class dgCMatrix or coercible into such
+                  #' @param b numeric vector
+                  #' @param G dense or sparse matrix of class dgCMatrix or coercible into such
+                  #' @param h numeric vector
+                  #' @param x_lb a numeric vector of lower bounds
+                  #' @param x_ub a numeric vector of upper bounds
+                  #' @param settings list with optimization parameters
+                  #' @param dense_backend a flag indicating if the dense solver is to be used
+                  #' @param dims the dimensions of the problem, a named list containing `n`, `p` and `m`.
+                  update = function(P = NULL, c = NULL, A = NULL, b = NULL, G = NULL, h = NULL,
+                                    x_lb = NULL, x_ub = NULL) {
+                    dims <- private$.dims
+                    n <- dims$n; p <- dims$p; m <- dims$m;
+                    if (! (length(c) %in% c(0, n) && 
+                             length(b) %in% c(0, p) &&
+                             length(h) %in% c(0, m) &&
+                             length(x_lb) %in% c(0, n) &&
+                             length(x_ub) %in% c(0, n)) ) {
+                      stop("Update parameters not match original problem dimensions")
+                    }
+                    
+                    sparse_backend <- !private$.dense_backend
+                    
+                    if (!is.null(P)) {
+                      if (NCOL(P) != n || NROW(P) != n) {
+                        stop("P dimension not matching original problem")
+                      }
+                      if (sparse_backend) P <- ensure_dgc_matrix(P)
+                    }
+                    
+                    if (!is.null(A)) {
+                      if (NCOL(A) != n || NROW(A) != p) {
+                        stop("A dimension not matching original problem")
+                      }
+                      if (sparse_backend) A <- ensure_dgc_matrix(A)                      
+                    }
+                    
+                    if (!is.null(G)) {
+                      if (NCOL(G) != n || NROW(G) != m) {
+                        stop("G dimension not matching original problem")
+                      }
+                      if (sparse_backend) G <- ensure_dgc_matrix(G)                                            
+                    }
+
+                   if (sparse_backend) {
+                      piqp_update_sparse(private$.solver_ptr, P, c, A, b, G, h, x_lb, x_ub)
+                    } else {
+                      piqp_update_dense(private$.solver_ptr, P, c, A, b, G, h, x_lb, x_ub)
+                    }
+                  }
+                 ,
+                  #' @description
+                  #' Obtain the current settings for this model
+                  get_settings = function() {
+                    get_settings(private$.solver_ptr, private$.dense_backend)
+                  }
+                 ,
+                  #' @description
+                  #' Obtain the dimensions of this model
+                  get_dims = function() {
+                    private$.dims
+                  }
+                 ,
+                  #' @description
+                  #' Update the current settings with new values for this model
+                  #' @param new_settings a list of named values for settings, default empty list; see [piqp_settings()] for a comprehensive list of defaults
+                  update_settings = function(new_settings = list()) {
+                    update_settings(private$.solver_ptr, private$.dense_backend, new_settings)
+                  }
+                )
+              )
+
+# This file is part of PIQP-R. It is based on osqp-r
+# (https://github.com/osqp/osqp-r) which is licensed
+# under Apache License 2.0
+#
+# Copyright (c) 2023 EPFL
+# Copyright (c) 2019 Paul Goulart, Bartolomeo Stellato
+#
+# This source code is licensed under the BSD 2-Clause License found in the
+# LICENSE file in the root directory of this source tree.
+
+#' PIQP Solver object
 #'
 #' @importFrom Matrix sparseMatrix
-#' @seealso [piqp_control()], [status_description()]
-#' @export piqp
+#' @inheritParams solve_piqp
+#' @return An R6-object of class "piqp_model" with methods defined which can be further
+#'   used to solve the problem with updated settings / parameters.
+#' @seealso [solve_piqp()],  [piqp_settings()]
+#' @section Usage:
+#' \preformatted{model = piqp(P = NULL, c = NULL, A = NULL, b = NULL, G = NULL, h = NULL, x_lb = NULL, x_ub = NULL, settings = piqp_settings(), backend = c("auto", "sparse", "dense"))
 #'
-#' 
-#  ---------------------------------------------------------
-piqp <- function(A = matrix(0, nrow = 0, ncol = 0), b = numeric(0), c = numeric(0),
-                 P = matrix(0, nrow = 0, ncol = 0), G = matrix(0, nrow = 0, ncol = 0),
-                 h = numeric(0),
-                 x_lb = NULL, x_ub = NULL,
-                 control = list(),
-                 interface = c("auto", "dense", "sparse")) {
-  interface <- match.arg(interface)
-  # Sanitize control parameters
-  control <- do.call(piqp_control, control)
+#' model$solve()
+#' model$update(P = NULL, c = NULL, A = NULL, b = NULL, G = NULL, h = NULL, x_lb = NULL, x_ub = NULL)
+#' model$get_settings()
+#' model$get_dims()
+#' model$update_settings(new_settings = piqp_settings())
+#'
+#' print(model)
+#' }
+#' @details
+#' Allows one to solve a parametric
+#' problem with for example warm starts between updates of the parameter, c.f. the examples.
+#' The object returned by \code{piqp} contains several methods which can be used to either update/get details of the
+#' problem, modify the optimization settings or attempt to solve the problem.
+#' @examples
+#' ## example, adapted from PIQP documentation
+#' library(piqp)
+#' library(Matrix)
+#'
+#' P <- Matrix(c(6., 0.,
+#'               0., 4.), 2, 2, sparse = TRUE)
+#' c <- c(-1., -4.)
+#' A <- Matrix(c(1., -2.), 1, 2, sparse = TRUE)
+#' b <- c(1.)
+#' G <- Matrix(c(1., 2., -1., 0.), 2, 2, sparse = TRUE)
+#' h <- c(0.2, -1.)
+#' x_lb <- c(-1., -Inf)
+#' x_ub <- c(1., Inf)
+#'
+#' settings <- list(verbose = TRUE)
+#'
+#' model <- piqp(P, c, A, b, G, h, x_lb, x_ub, settings)
+#'
+#' # Solve
+#' res <- model$solve()
+#' res$x
+#'
+#' # Define new data
+#' A_new <- Matrix(c(1., -3.), 1, 2, sparse = TRUE)
+#' h_new <- c(2., 1.)
+#'
+#' # Update model and solve again
+#' model$update(A = A_new, h = h_new)
+#' res <- model$solve()
+#' res$x
+#'
+#' @export piqp
+piqp <- function(P = NULL, c = NULL, A = NULL, b = NULL, G = NULL, h = NULL, x_lb = NULL, x_ub = NULL,
+                 settings = list(), backend = c("auto", "sparse", "dense")) {
 
-  ncol_A <- NCOL(A)
-  nrow_A <- NROW(A)
-  ncol_P <- NCOL(P)
-  ncol_G <- NCOL(G)
-  nrow_G <- NROW(G)
-  
-  n <- max(ncol_A, ncol_P, ncol_G)
-  if (n <= 0) {
-    stop("piqp: Bad input matrices")
-  }
-         
-  if (ncol_A == 0) {
-    A <- matrix(0, nrow = 0, ncol = n)
-  }
-  if (ncol_P == 0) {
-    P <- matrix(0, nrow = n, ncol = n)
-  }
-  if (ncol_G == 0) {
-    G <- matrix(0, nrow = 0, ncol = n)
-  }
-  
-  if (is.null(x_lb)) x_lb <- rep(-Inf, n)
-  if (is.null(x_ub)) x_ub <- rep(Inf, n)
+  # match possible options
+  backend <- match.arg(backend)
 
-  if (interface == "auto") {
-    if (inherits(A, "dgCMatrix") || inherits(A, "simple_triplet_matrix") ||
-          inherits(P, "dgCMatrix") || inherits(P, "simple_triplet_matrix") ||
-          inherits(G, "dgCMatrix") || inherits(G, "simple_triplet_matrix")) {
-      use_sparse <- TRUE
+  sparse_backend <- (backend == "sparse") || inherits(P, "simple_triplet_matrix") ||
+    inherits(A, "simple_triplet_matrix") || inherits(G, "simple_triplet_matrix") ||
+    inherits(P, "sparseMatrix") || inherits(A, "sparseMatrix") || inherits(G, "sparseMatrix")
+
+  if (is.null(P)) {
+    n <- length(c)
+  } else {
+    n <- NCOL(P)
+  }
+
+  if (n == 0) {
+    stop("At least one of P and c must be supplied")
+  }
+  
+  if (!sparse_backend) { ## dense
+
+    if (is.null(P)) {
+      P <- matrix(0, n, n)
+    }
+
+    if (is.null(A)) {
+      p <- 0
+      A <- matrix(0, 0, n)
+      b <- numeric(0)
     } else {
-      use_sparse <- FALSE
+      p <- nrow(A)
+      if (length(b) != p)
+        stop(sprintf("b length %d must match A number of rows %d", length(b), p))        
+      if (NCOL(A) != n)
+        stop(sprintf("A should have %d columns", n))      
     }
-  } else {
-    use_sparse <- (interface == "sparse")
-  }
-      
-  ## Checks needed.
-  if (use_sparse) {
-    if (!inherits(A, "dgCMatrix") ) {
-      csc <- make_csc_matrix(A)
-      Ai <- csc[["matind"]]
-      Ap <- csc[["matbeg"]]
-      Ax <- csc[["values"]]
-      A <- Matrix::sparseMatrix(i = Ai, p = Ap, x = Ax, dims = c(nrow_A, n), index1 = FALSE)
+    
+    if (is.null(G)) {
+      m <- 0
+      G <- matrix(0, 0, n)
+      h <- numeric(0)
+    } else {
+      m <- nrow(G)
+      if (length(h) != m)
+        stop(sprintf("h length %d must match G number of rows %d", length(h), m))
+      if (NCOL(G) != n)
+        stop(sprintf("G should have %d columns", n))        
+    }
+    
+  } else { ## sparse
+
+    if (is.null(P)) {
+      P <- Matrix::sparseMatrix(i = integer(0), j = integer(0), x = numeric(0), dims = c(n, n))
+    } else {
+      P <- ensure_dgc_matrix(P, n, n)                      
     }
 
-    if (!inherits(P, "dgCMatrix") ) {
-      csc  <- make_csc_matrix(P)
-      Pi <- csc[["matind"]]
-      Pp <- csc[["matbeg"]]
-      Px <- csc[["values"]]
-      P <- Matrix::sparseMatrix(i = Pi, p = Pp, x = Px, dims = c(n, n), index1 = FALSE)      
+    if (is.null(A)) {
+      p <- 0
+      A <- Matrix::sparseMatrix(i = integer(0), j = integer(0), x = numeric(0), dims = c(0, n))
+      b <- numeric(0)
+    } else {
+      p <- NROW(A)
+      if (length(b) != p) stop(sprintf("b length %d must match A number of rows %d", length(b), p))
+      if (NCOL(A) != n) stop(sprintf("A should have %d columns", n))
+      A <- ensure_dgc_matrix(A, p, n)
     }
 
-    if (!inherits(G, "dgCMatrix") ) {
-      csc  <- make_csc_matrix(G)
-      Gi <- csc[["matind"]]
-      Gp <- csc[["matbeg"]]
-      Gx <- csc[["values"]]
-      G <- Matrix::sparseMatrix(i = Gi, p = Gp, x = Gx, dims = c(nrow_G, n), index1 = FALSE)      
+    if (is.null(G)) {
+      m <- 0
+      G <- Matrix::sparseMatrix(i = integer(), j = integer(0), x = numeric(0), dims = c(0, n))
+      h <- numeric(0)
+    } else {
+      m <- NROW(G)
+      if (length(h) != m) stop(sprintf("h length %d must match G number of rows %d", length(h), m))
+      if (NCOL(G) != n) stop(sprintf("G should have %d columns", n))        
+      G <- ensure_dgc_matrix(G, m, n)
     }
-    ## piqp_sparse_solve(P, c, A, b, G, h, x_lb, x_ub, control)
-    .Call('_piqp_piqp_sparse_solve', PACKAGE = 'piqp', P, c, A, b, G, h, x_lb, x_ub, control)
-  } else {
-    ##piqp_dense_solve(P, c, A, b, G, h, x_lb, x_ub, control)
-    .Call('_piqp_piqp_dense_solve', PACKAGE = 'piqp', P, c, A, b, G, h, x_lb, x_ub, control)
   }
+  if (is.null(c)) {
+    c <- numeric(n)
+  } else {
+    if (length(c) != n) {
+      stop(sprintf("P and c must have the same dimension %d", n))
+    }
+  }
+
+  if (is.null(x_lb)) {
+    x_lb <- rep(-Inf, n)
+  } else {
+    if (length(x_lb) != n) stop(sprintf("x_lb length should be %d", n))
+  }
+  
+  if (is.null(x_ub)) {
+    x_ub <- rep(Inf, n)
+  } else {
+    if (length(x_ub) != n) stop(sprintf("x_ub length should be %d", n))
+  }
+  
+    piqp_model$new(P, c, A, b, G, h, x_lb, x_ub, settings, dense_backend = !sparse_backend,
+                   dims = list(n = n, p = p, m = m))
 }
 
-#' Control parameters with default values and types in parenthesis
+#' @method format pipq_model
+format.piqp_model <- function(x, ...) {
+  dims <- x$get_dims()
+  sprintf("PIQP-model object\n\nNumber of variables: %i\nNumber of constraints: %i", dims$n, dims$p)
+}
+
+#' @method print pipq_model
+print.piqp_model <- function(x, ...)
+  cat(format(x))
+
+
+#' Settings parameters with default values and types in parenthesis
 #'
 #' @param rho_init Initial value for the primal proximal penalty parameter rho (default = 1e-6)
 #' @param delta_init Initial value for the augmented lagrangian penalty parameter delta (default = 1e-4)
@@ -159,35 +327,35 @@ piqp <- function(A = matrix(0, nrow = 0, ncol = 0), b = numeric(0), c = numeric(
 #' @param iterative_refinement_static_regularization_rel Static regularization w.r.t. the maximum abs diagonal term of KKT system. (default = .Machine$double.eps^2)
 #' @param verbose Verbose printing (default = FALSE)
 #' @param compute_timings Measure timing information internally (default = FALSE)
-#' @return a list containing the control parameters.
-#' @export piqp_control
-piqp_control <- function(
-                         ## Main algorithm settings
-                         rho_init = 1e-6,
-                         delta_init = 1e-4,
-                         eps_abs = 1e-8,
-                         eps_rel = 1e-9,
-                         check_duality_gap = TRUE,
-                         eps_duality_gap_abs = 1e-8,
-                         eps_duality_gap_rel = 1e-9,
-                         reg_lower_limit = 1e-10,
-                         reg_finetune_lower_limit = 1e-13,
-                         reg_finetune_primal_update_threshold = 7L,
-                         reg_finetune_dual_update_threshold = 5L,
-                         max_iter = 250L,
-                         max_factor_retires = 10L,
-                         preconditioner_scale_cost = FALSE,
-                         preconditioner_iter = 10L,
-                         tau = 0.99,
-                         iterative_refinement_always_enabled = FALSE,
-                         iterative_refinement_eps_abs = 1e-12,
-                         iterative_refinement_eps_rel = 1e-12,
-                         iterative_refinement_max_iter = 10L,
-                         iterative_refinement_min_improvement_rate = 5.0,
-                         iterative_refinement_static_regularization_eps = 1e-7,
-                         iterative_refinement_static_regularization_rel = .Machine$double.eps^2,
-                         verbose = FALSE,
-                         compute_timings = FALSE) {
+#' @return a list containing the settings parameters.
+#' @export piqp_settings
+piqp_settings <- function(
+                          ## Main algorithm settings
+                          rho_init = 1e-6,
+                          delta_init = 1e-4,
+                          eps_abs = 1e-8,
+                          eps_rel = 1e-9,
+                          check_duality_gap = TRUE,
+                          eps_duality_gap_abs = 1e-8,
+                          eps_duality_gap_rel = 1e-9,
+                          reg_lower_limit = 1e-10,
+                          reg_finetune_lower_limit = 1e-13,
+                          reg_finetune_primal_update_threshold = 7L,
+                          reg_finetune_dual_update_threshold = 5L,
+                          max_iter = 250L,
+                          max_factor_retires = 10L,
+                          preconditioner_scale_cost = FALSE,
+                          preconditioner_iter = 10L,
+                          tau = 0.99,
+                          iterative_refinement_always_enabled = FALSE,
+                          iterative_refinement_eps_abs = 1e-12,
+                          iterative_refinement_eps_rel = 1e-12,
+                          iterative_refinement_max_iter = 10L,
+                          iterative_refinement_min_improvement_rate = 5.0,
+                          iterative_refinement_static_regularization_eps = 1e-7,
+                          iterative_refinement_static_regularization_rel = .Machine$double.eps^2,
+                          verbose = FALSE,
+                          compute_timings = FALSE) {
 
   params <- as.list(environment())
   
@@ -204,9 +372,9 @@ piqp_control <- function(
                   "preconditioner_iter",
                   "iterative_refinement_max_iter")
 
-  if (any(sapply(params, length) != 1L)) stop("piqp_control: arguments should be scalars!")
-  if (any(unlist(params[int_params]) < 0)) stop("piqp_control: integer arguments should be >= 0!")
- 
+  if (any(sapply(params, length) != 1L)) stop("piqp_settings: arguments should be scalars!")
+  if (any(unlist(params[int_params]) < 0)) stop("piqp_settings: integer arguments should be >= 0!")
+  
   ## The rest
   float_params <- setdiff(names(params), c(bool_params, int_params))
 
@@ -249,3 +417,21 @@ status_description <- function(code) {
   desc[code + 11]
 }
 
+## Ensure that a matrix is of class "dgCMatrix"
+## Note: in Matrix, a sparseMatrix need not be dgCMatrix;
+## it could be ddiMatrix, dgTMatrix, etc. So coerce!
+#' @importFrom methods as
+ensure_dgc_matrix <- function(mat, nrow, ncol) {
+  if (inherits(mat, "simple_triplet_matrix")) {
+    csc <- make_csc_matrix(mat)
+    Matrix::sparseMatrix(i = csc[["matind"]], p = csc[["matbeg"]], x = csc[["values"]],
+                         dims = c(nrow, ncol), index1 = FALSE)
+  } else {
+    if (!inherits(mat, "dgCMatrix")) {
+      as(as(mat, "generalMatrix"), "CsparseMatrix")
+    } else {
+      mat
+    }
+  }
+}
+    

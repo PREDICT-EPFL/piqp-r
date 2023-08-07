@@ -31,13 +31,13 @@
     <loc>/reference/piqp.html</loc>
   </url>
   <url>
-    <loc>/reference/piqp_control.html</loc>
+    <loc>/reference/piqp_model.html</loc>
   </url>
   <url>
-    <loc>/reference/piqp_dense_solve.html</loc>
+    <loc>/reference/piqp_settings.html</loc>
   </url>
   <url>
-    <loc>/reference/piqp_sparse_solve.html</loc>
+    <loc>/reference/solve_piqp.html</loc>
   </url>
   <url>
     <loc>/reference/status_description.html</loc>

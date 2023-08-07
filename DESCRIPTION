@@ -14,6 +14,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 URL: https://bnaras.github.io/piqp
 BugReports: https://github.com/bnaras/piqp/issues
+SystemRequirements: C++14
 LinkingTo: 
     Rcpp,
     RcppEigen
@@ -25,4 +26,6 @@ Suggests:
 VignetteBuilder: knitr
 Imports: 
     Matrix,
+    methods,
+    R6,
     Rcpp

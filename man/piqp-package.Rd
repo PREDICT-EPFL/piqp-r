@@ -18,6 +18,6 @@ efficiently. Allocation free problem updates and re-solves are
 also provided.
 }
 \author{
-Balasubramanian Narasimhan, Roland Schwan, Yuning Jiang, Daniel Kuhn, Colin N. Jones
+Balasubramanian Narasimhan, Roland Schwan (C), Yuning Jiang, Daniel Kuhn, Colin N. Jones
 }
 \keyword{package}

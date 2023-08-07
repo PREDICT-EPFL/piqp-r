@@ -105,7 +105,7 @@ problems, i.e., they are converted internally to <code>-1e30</code> and
 <code>1e30</code>, respectively.</p>
 </div>
 <div class="section level2">
-<h2 id="example">2. Example<a class="anchor" aria-label="anchor" href="#example"></a>
+<h2 id="the-problem-solver-interface">2. The Problem Solver Interface<a class="anchor" aria-label="anchor" href="#the-problem-solver-interface"></a>
 </h2>
 <p>Consider:</p>
 <p><span class="math display">\[
@@ -130,16 +130,17 @@ problems, i.e., they are converted internally to <code>-1e30</code> and
 <span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">x_lb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="cn">Inf</span><span class="op">)</span>  <span class="co">## 2 variables</span></span>
 <span><span class="va">x_ub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">Inf</span><span class="op">)</span>    <span class="co">## 2 variables</span></span></code></pre></div>
-<p>The problem can now be solved via a call to <code><a href="../reference/piqp.html">piqp()</a></code>.</p>
+<p>The problem can now be solved via a call to
+<code><a href="../reference/solve_piqp.html">solve_piqp()</a></code>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/piqp.html">piqp</a></span><span class="op">(</span><span class="va">A</span>, <span class="va">b</span>, <span class="va">c</span>, <span class="va">P</span>, <span class="va">G</span>, <span class="va">h</span>, x_lb <span class="op">=</span> <span class="va">x_lb</span>, x_ub <span class="op">=</span> <span class="va">x_ub</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_piqp.html">solve_piqp</a></span><span class="op">(</span><span class="va">P</span>, <span class="va">c</span>, <span class="va">A</span>, <span class="va">b</span>, <span class="va">G</span>, <span class="va">h</span>, x_lb <span class="op">=</span> <span class="va">x_lb</span>, x_ub <span class="op">=</span> <span class="va">x_ub</span>, backend <span class="op">=</span> <span class="st">"auto"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"(Solution status, description): = (%d, %s)\n"</span>,</span>
-<span>            <span class="va">sol</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/status_description.html">status_description</a></span><span class="op">(</span><span class="va">sol</span><span class="op">$</span><span class="va">status</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; (Solution status, description): = (1, Solver solved problem up to given tolerance.)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Objective: %f, solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">sol</span><span class="op">$</span><span class="va">pobj</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>            <span class="va">sol</span><span class="op">$</span><span class="va">status</span>, <span class="va">sol</span><span class="op">$</span><span class="va">info</span><span class="op">$</span><span class="va">status_desc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (Solution status, description): = (1, solved)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Objective: %f, solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">sol</span><span class="op">$</span><span class="va">info</span><span class="op">$</span><span class="va">primal_obj</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Objective: 6.160000, solution: (x1, x2) = (-0.600000, -0.800000)</span></span></code></pre></div>
-<p><code>sol</code> contains several components, the most commonly used
-ones being:</p>
+<p><code>sol</code> contains many components as <code>str(sol)</code>
+will display but the most important ones are:</p>
 <ul>
 <li>
 <code>status</code> : 1 if all goes well (more below),</li>
@@ -156,16 +157,66 @@ constraints</li>
 <code>z_ub</code> : dual solution of upper bound box
 constraints</li>
 <li>
-<code>pobj</code> : primal objective value</li>
+<code>info$status_desc</code>: a descriptive string of the
+status</li>
 <li>
-<code>run_time</code> : total runtime, if asked for in settings (see
-below).</li>
+<code>info$primal_pobj</code> : primal objective value</li>
+<li>
+<code>info$run_time</code> : total runtime, if asked for in settings
+(see below).</li>
 </ul>
-<p>Note how a descriptive string for the status was be obtained above
+<p>One can always construct the descriptive string for the status
 using:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/status_description.html">status_description</a></span><span class="op">(</span><span class="va">sol</span><span class="op">$</span><span class="va">status</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "Solver solved problem up to given tolerance."</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="the-solver-model-object">3. The Solver Model Object<a class="anchor" aria-label="anchor" href="#the-solver-model-object"></a>
+</h2>
+<p>Users who wish to solve QP problems will mostly use the
+<code><a href="../reference/solve_piqp.html">solve_piqp()</a></code> function. Behind the scenes,
+<code><a href="../reference/solve_piqp.html">solve_piqp()</a></code> creates a solver object and calls methods on
+the object to obtain the solution. The solver object can be created
+explitly using <code><a href="../reference/piqp.html">piqp()</a></code> and provides more elaborate
+facilities for updating problem data. This can be very efficient when
+one is solving the same kind of problem over and over.</p>
+<p>The above problem could be solved using the solver model object
+thus:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/piqp.html">piqp</a></span><span class="op">(</span><span class="va">P</span>, <span class="va">c</span>, <span class="va">A</span>, <span class="va">b</span>, <span class="va">G</span>, <span class="va">h</span>, x_lb <span class="op">=</span> <span class="va">x_lb</span>, x_ub <span class="op">=</span> <span class="va">x_ub</span><span class="op">)</span></span>
+<span><span class="va">sol2</span> <span class="op">&lt;-</span> <span class="va">model</span><span class="op">$</span><span class="fu">solve</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">sol</span>, <span class="va">sol2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>Indeed, this is exactly what <code><a href="../reference/solve_piqp.html">solve_piqp()</a></code> does. But this
+interface allows us to update the settings, the bounds, etc. and resolve
+the same problem more efficiently.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">model</span><span class="op">$</span><span class="fu">update</span><span class="op">(</span>x_lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">sol3</span> <span class="op">&lt;-</span> <span class="va">model</span><span class="op">$</span><span class="fu">solve</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"(Solution status, description): = (%d, %s)\n"</span>,</span>
+<span>            <span class="va">sol3</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/status_description.html">status_description</a></span><span class="op">(</span><span class="va">sol3</span><span class="op">$</span><span class="va">status</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (Solution status, description): = (-2, The problem is primal infeasible.)</span></span></code></pre></div>
+<p>Setting the lower bounds made the problem infeasible.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">## Try to give an inappropriate b value</span></span>
+<span><span class="va">model</span><span class="op">$</span><span class="fu">update</span><span class="op">(</span>b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in model$update(b = c(5, 2)): Update parameters not match original problem dimensions</span></span></code></pre></div>
+<p>The error message correctly indicates that b has wrong
+dimensions.</p>
+<p>The methods exposed by the model object can be seen in the
+documentation for the object <code>piqp_model</code>.</p>
+<p>For example, we could query the problem dimensions.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">model</span><span class="op">$</span><span class="fu">get_dims</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $n</span></span>
+<span><span class="co">#&gt; [1] 2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $p</span></span>
+<span><span class="co">#&gt; [1] 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $m</span></span>
+<span><span class="co">#&gt; [1] 2</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="dense-and-sparse-interfaces">3. Dense and Sparse Interfaces<a class="anchor" aria-label="anchor" href="#dense-and-sparse-interfaces"></a>
@@ -176,30 +227,58 @@ instructions and cache locality can be exploited more efficiently, but
 for sparse problems the sparse interface and result in significant
 speedups.</p>
 <p>These interfaces can be requested explicitly via the
-<code>interface</code> parameter which can take on any value among
+<code>backend</code> parameter which can take on any value among
 <code>"dense"</code>, <code>"sparse"</code>, or <code>"auto"</code>, the
 default. The last value will automatically switch to a sparse interface
 if any of the supplied inputs (<span class="math inline">\(A\)</span>,
 <span class="math inline">\(P\)</span>, or <span class="math inline">\(G\)</span>) is a sparse matrix; otherwise it uses
 the dense interface.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sparse_sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/piqp.html">piqp</a></span><span class="op">(</span><span class="va">A</span>, <span class="va">b</span>, <span class="va">c</span>, <span class="va">P</span>, <span class="va">G</span>, <span class="va">h</span>, x_lb <span class="op">=</span> <span class="va">x_lb</span>, x_ub <span class="op">=</span> <span class="va">x_ub</span>, interface <span class="op">=</span> <span class="st">"sparse"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sparse_sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_piqp.html">solve_piqp</a></span><span class="op">(</span><span class="va">P</span>, <span class="va">c</span>, <span class="va">A</span>, <span class="va">b</span>, <span class="va">G</span>, <span class="va">h</span>, <span class="va">x_lb</span>, <span class="va">x_ub</span>, backend <span class="op">=</span> <span class="st">"sparse"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">sparse_sol</span><span class="op">)</span></span>
-<span><span class="co">#&gt; List of 11</span></span>
-<span><span class="co">#&gt;  $ status  : int 1</span></span>
-<span><span class="co">#&gt;  $ x       : num [1:2] -0.6 -0.8</span></span>
-<span><span class="co">#&gt;  $ y       : num -11.8</span></span>
-<span><span class="co">#&gt;  $ z       : num [1:2] 1.64e+01 1.01e-08</span></span>
-<span><span class="co">#&gt;  $ z_lb    : num [1:2] 5.61e-10 0.00</span></span>
-<span><span class="co">#&gt;  $ z_ub    : num [1:2] 3.2e-10 0.0</span></span>
-<span><span class="co">#&gt;  $ pobj    : num 6.16</span></span>
-<span><span class="co">#&gt;  $ dobj    : num 6.16</span></span>
-<span><span class="co">#&gt;  $ dgap    : num 3.88e-09</span></span>
-<span><span class="co">#&gt;  $ dgap_rel: num 11.8</span></span>
-<span><span class="co">#&gt;  $ run_time: num 0</span></span></code></pre></div>
+<span><span class="co">#&gt; List of 15</span></span>
+<span><span class="co">#&gt;  $ status: int 1</span></span>
+<span><span class="co">#&gt;  $ x     : num [1:2] -0.6 -0.8</span></span>
+<span><span class="co">#&gt;  $ y     : num -11.8</span></span>
+<span><span class="co">#&gt;  $ z     : num [1:2] 1.64e+01 1.01e-08</span></span>
+<span><span class="co">#&gt;  $ z_lb  : num [1:2] 5.61e-10 0.00</span></span>
+<span><span class="co">#&gt;  $ z_ub  : num [1:2] 3.2e-10 0.0</span></span>
+<span><span class="co">#&gt;  $ s     : num [1:2] 5.19e-11 2.00e-01</span></span>
+<span><span class="co">#&gt;  $ s_lb  : num [1:2] 0.4 Inf</span></span>
+<span><span class="co">#&gt;  $ s_ub  : num [1:2] 1.6 Inf</span></span>
+<span><span class="co">#&gt;  $ zeta  : num [1:2] -0.6 -0.8</span></span>
+<span><span class="co">#&gt;  $ lambda: num -11.8</span></span>
+<span><span class="co">#&gt;  $ nu    : num [1:2] 1.64e+01 1.01e-08</span></span>
+<span><span class="co">#&gt;  $ nu_lb : num [1:2] 5.61e-10 0.00</span></span>
+<span><span class="co">#&gt;  $ nu_ub : num [1:2] 3.2e-10 0.0</span></span>
+<span><span class="co">#&gt;  $ info  :List of 24</span></span>
+<span><span class="co">#&gt;   ..$ status_desc     : chr "solved"</span></span>
+<span><span class="co">#&gt;   ..$ iter            : num 6</span></span>
+<span><span class="co">#&gt;   ..$ rho             : num 1e-10</span></span>
+<span><span class="co">#&gt;   ..$ delta           : num 1e-10</span></span>
+<span><span class="co">#&gt;   ..$ mu              : num 9.01e-10</span></span>
+<span><span class="co">#&gt;   ..$ sigma           : num 1e-06</span></span>
+<span><span class="co">#&gt;   ..$ primal_step     : num 0.99</span></span>
+<span><span class="co">#&gt;   ..$ dual_step       : num 0.99</span></span>
+<span><span class="co">#&gt;   ..$ primal_inf      : num 4.44e-11</span></span>
+<span><span class="co">#&gt;   ..$ primal_rel_inf  : num 1.6</span></span>
+<span><span class="co">#&gt;   ..$ dual_inf        : num 8.11e-10</span></span>
+<span><span class="co">#&gt;   ..$ dual_rel_inf    : num 7.2</span></span>
+<span><span class="co">#&gt;   ..$ primal_obj      : num 6.16</span></span>
+<span><span class="co">#&gt;   ..$ dual_obj        : num 6.16</span></span>
+<span><span class="co">#&gt;   ..$ duality_gap     : num 3.88e-09</span></span>
+<span><span class="co">#&gt;   ..$ duality_gap_rel : num 11.8</span></span>
+<span><span class="co">#&gt;   ..$ factor_retires  : num 0</span></span>
+<span><span class="co">#&gt;   ..$ reg_limit       : num 1e-10</span></span>
+<span><span class="co">#&gt;   ..$ no_primal_update: num 0</span></span>
+<span><span class="co">#&gt;   ..$ no_dual_update  : num 0</span></span>
+<span><span class="co">#&gt;   ..$ setup_time      : num 0</span></span>
+<span><span class="co">#&gt;   ..$ update_time     : num 0</span></span>
+<span><span class="co">#&gt;   ..$ solve_time      : num 0</span></span>
+<span><span class="co">#&gt;   ..$ run_time        : num 0</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="another-example">4. Another Example<a class="anchor" aria-label="anchor" href="#another-example"></a>
+<h2 id="another-example">5. Another Example<a class="anchor" aria-label="anchor" href="#another-example"></a>
 </h2>
 <p>Suppose that we want to solve the following 2-dimensional quadratic
 programming problem:</p>
@@ -217,48 +296,59 @@ q = \begin{bmatrix} -1 \\ -4\end{bmatrix}.
 \]</span></p>
 <p>We have one equality constraint and box constraints. This leads to
 the following straight-forward formulation.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu">as</span><span class="op">(</span><span class="fu">as</span><span class="op">(</span><span class="va">P</span>, <span class="st">"generalMatrix"</span><span class="op">)</span>, <span class="st">"CsparseMatrix"</span><span class="op">)</span></span>
 <span><span class="va">c</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">4</span><span class="op">)</span></span>
-<span><span class="va">A</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="co">#A &lt;- matrix(c(1, -2), ncol = 2)</span></span>
+<span><span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
 <span><span class="va">x_lb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.0</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">x_ub</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1.0</span>, <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/piqp.html">piqp</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, c <span class="op">=</span> <span class="va">c</span>, P <span class="op">=</span> <span class="va">P</span>, x_lb <span class="op">=</span> <span class="va">x_lb</span>, x_ub <span class="op">=</span> <span class="va">x_ub</span><span class="op">)</span></span>
+<span><span class="va">sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_piqp.html">solve_piqp</a></span><span class="op">(</span>P <span class="op">=</span> <span class="va">P</span>, c <span class="op">=</span> <span class="va">c</span>, A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, x_lb <span class="op">=</span> <span class="va">x_lb</span>, x_ub <span class="op">=</span> <span class="va">x_ub</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"(Solution status, description): = (%d, %s)\n"</span>,</span>
-<span>            <span class="va">sol</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/status_description.html">status_description</a></span><span class="op">(</span><span class="va">sol</span><span class="op">$</span><span class="va">status</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; (Solution status, description): = (1, Solver solved problem up to given tolerance.)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Objective: %f, solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">sol</span><span class="op">$</span><span class="va">pobj</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>            <span class="va">sol</span><span class="op">$</span><span class="va">status</span>, <span class="va">sol</span><span class="op">$</span><span class="va">info</span><span class="op">$</span><span class="va">status_desc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (Solution status, description): = (1, solved)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Objective: %f, solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">sol</span><span class="op">$</span><span class="va">info</span><span class="op">$</span><span class="va">primal_obj</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Objective: -0.642857, solution: (x1, x2) = (0.428571, 0.214286)</span></span></code></pre></div>
-<p>But we can also choose to move the box constraints into the
-inequalities and it should yield the same solution.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>But we can also choose to move the upper box constraints into the
+inequalities.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">G</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_piqp.html">solve_piqp</a></span><span class="op">(</span>P <span class="op">=</span> <span class="va">P</span>, c <span class="op">=</span> <span class="va">c</span>, A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, G <span class="op">=</span> <span class="va">G</span>, h <span class="op">=</span> <span class="va">h</span>,</span>
+<span>                  x_lb <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, x_ub <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"(Solution status, description): = (%d, %s)\n"</span>,</span>
+<span>            <span class="va">sol</span><span class="op">$</span><span class="va">status</span>, <span class="va">sol</span><span class="op">$</span><span class="va">info</span><span class="op">$</span><span class="va">status_desc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (Solution status, description): = (1, solved)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Objective: %f, solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">sol</span><span class="op">$</span><span class="va">info</span><span class="op">$</span><span class="va">primal_obj</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Objective: -0.642857, solution: (x1, x2) = (0.428571, 0.214286)</span></span></code></pre></div>
+<p>Or we can move both of them into the inequalities.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">G</span> <span class="op">&lt;-</span> <span class="fu">Matrix</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/Matrix/man/Matrix.html" class="external-link">Matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                    nrow <span class="op">=</span> <span class="fl">4</span>, sparse <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span></span>
-<span><span class="va">sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/piqp.html">piqp</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, c <span class="op">=</span> <span class="va">c</span>, P <span class="op">=</span> <span class="va">P</span>, G <span class="op">=</span> <span class="va">G</span>, h <span class="op">=</span> <span class="va">h</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sol</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_piqp.html">solve_piqp</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, c <span class="op">=</span> <span class="va">c</span>, P <span class="op">=</span> <span class="va">P</span>, G <span class="op">=</span> <span class="va">G</span>, h <span class="op">=</span> <span class="va">h</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"(Solution status, description): = (%d, %s)\n"</span>,</span>
 <span>            <span class="va">sol</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/status_description.html">status_description</a></span><span class="op">(</span><span class="va">sol</span><span class="op">$</span><span class="va">status</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; (Solution status, description): = (1, Solver solved problem up to given tolerance.)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Objective: %f, solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">sol</span><span class="op">$</span><span class="va">pobj</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Objective: %f, solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">sol</span><span class="op">$</span><span class="va">info</span><span class="op">$</span><span class="va">primal_obj</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sol</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Objective: -0.642857, solution: (x1, x2) = (0.428571, 0.214286)</span></span></code></pre></div>
+<p>All of them will yield the same result.</p>
 </div>
 <div class="section level2">
-<h2 id="control-parameters">5. Control parameters<a class="anchor" aria-label="anchor" href="#control-parameters"></a>
+<h2 id="solver-parameters">5. Solver parameters<a class="anchor" aria-label="anchor" href="#solver-parameters"></a>
 </h2>
 <p>PIQP has a number of parameters that control its behavior, including
-verbosity, tolerances, etc.; see help on <code><a href="../reference/piqp_control.html">piqp_control()</a></code>. As
-an example, in the last problem, we can reduce the number of
+verbosity, tolerances, etc.; see help on <code><a href="../reference/piqp_settings.html">piqp_settings()</a></code>.
+As an example, in the last problem, we can reduce the number of
 iterations.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/piqp.html">piqp</a></span><span class="op">(</span>A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, c <span class="op">=</span> <span class="va">c</span>, P <span class="op">=</span> <span class="va">P</span>, G <span class="op">=</span> <span class="va">G</span>, h <span class="op">=</span> <span class="va">h</span>,</span>
-<span>          control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_iter <span class="op">=</span> <span class="fl">3</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="co">## Reduced number of iterations</span></span>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/solve_piqp.html">solve_piqp</a></span><span class="op">(</span>P <span class="op">=</span> <span class="va">P</span>, c <span class="op">=</span> <span class="va">c</span>, A <span class="op">=</span> <span class="va">A</span>, b <span class="op">=</span> <span class="va">b</span>, G <span class="op">=</span> <span class="va">G</span>, h <span class="op">=</span> <span class="va">h</span>,</span>
+<span>          settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>max_iter <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="co">## Reduced number of iterations</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"(Solution status, description): = (%d, %s)\n"</span>,</span>
-<span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="fu"><a href="../reference/status_description.html">status_description</a></span><span class="op">(</span><span class="va">s</span><span class="op">$</span><span class="va">status</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; (Solution status, description): = (-1, Iteration limit was reached.)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Objective: %f, solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">pobj</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>            <span class="va">s</span><span class="op">$</span><span class="va">status</span>, <span class="va">s</span><span class="op">$</span><span class="va">info</span><span class="op">$</span><span class="va">status_desc</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (Solution status, description): = (-1, max iterations reached)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"Objective: %f, solution: (x1, x2) = (%f, %f)\n"</span>, <span class="va">s</span><span class="op">$</span><span class="va">info</span><span class="op">$</span><span class="va">primal_obj</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">s</span><span class="op">$</span><span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Objective: -0.642857, solution: (x1, x2) = (0.428294, 0.214147)</span></span></code></pre></div>
 <p>Note the different status, which should always be checked in
 code.</p>

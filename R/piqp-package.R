@@ -16,6 +16,6 @@
 #' @docType package
 #' @useDynLib piqp 
 #' @importFrom Rcpp evalCpp
-#' @author Balasubramanian Narasimhan, Roland Schwan, Yuning Jiang, Daniel Kuhn, Colin N. Jones
+#' @author Balasubramanian Narasimhan, Roland Schwan (C), Yuning Jiang, Daniel Kuhn, Colin N. Jones
 #' @keywords package
 NULL

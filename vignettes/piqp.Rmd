@@ -43,7 +43,7 @@ respectively. On the contrary, infinite values in the general
 inequalities $Gx \leq h = \pm \infty$ can cause problems, i.e., they
 are converted internally to `-1e30` and `1e30`, respectively.
 
-## 2. Example 
+## 2. The Problem Solver Interface 
 
 Consider:
 
@@ -69,16 +69,16 @@ x_lb <- c(-1, -Inf)  ## 2 variables
 x_ub <- c(1, Inf)    ## 2 variables
 ```
 
-The problem can now be solved via a call to `piqp()`.
+The problem can now be solved via a call to `solve_piqp()`.
 
 ```{r}
-sol <- piqp(A, b, c, P, G, h, x_lb = x_lb, x_ub = x_ub)
+sol <- solve_piqp(P, c, A, b, G, h, x_lb = x_lb, x_ub = x_ub, backend = "auto")
 cat(sprintf("(Solution status, description): = (%d, %s)\n",
-            sol$status, status_description(sol$status)))
-cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", sol$pobj, sol$x[1], sol$x[2]))
+            sol$status, sol$info$status_desc))
+cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", sol$info$primal_obj, sol$x[1], sol$x[2]))
 ```
 
-`sol` contains several components, the most commonly used ones being:
+`sol` contains many components as `str(sol)` will display but the most important ones are:
 
 - `status` : 1 if all goes well (more below),
 - `x` : solution vector
@@ -86,13 +86,61 @@ cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", sol$pobj, sol$x[1]
 - `z` : dual solution for the inequality constraints
 - `z_lb` : dual solution of lower bound box constraints
 - `z_ub` : dual solution of upper bound box constraints
-- `pobj` : primal objective value
-- `run_time` : total runtime, if asked for in settings (see below).
+- `info$status_desc`: a descriptive string of the status
+- `info$primal_pobj` : primal objective value
+- `info$run_time` : total runtime, if asked for in settings (see below).
 
-Note how a descriptive string for the status was be obtained above using:
+One can always construct the descriptive string for the status using:
 
 ```{r}
 status_description(sol$status)
+```
+
+## 3. The Solver Model Object
+
+Users who wish to solve QP problems will mostly use the `solve_piqp()`
+function. Behind the scenes, `solve_piqp()` creates a solver object
+and calls methods on the object to obtain the solution. The solver
+object can be created explitly using `piqp()` and provides more
+elaborate facilities for updating problem data. This can be very
+efficient when one is solving the same kind of problem over and
+over. 
+
+The above problem could be solved using the solver model object thus:
+
+```{r}
+model <- piqp(P, c, A, b, G, h, x_lb = x_lb, x_ub = x_ub)
+sol2 <- model$solve()
+identical(sol, sol2)
+```
+
+Indeed, this is exactly what `solve_piqp()` does. But this interface
+allows us to update the settings, the bounds, etc. and resolve the
+same problem more efficiently.
+
+```{r}
+model$update(x_lb = c(0, 0))
+sol3 <- model$solve()
+cat(sprintf("(Solution status, description): = (%d, %s)\n",
+            sol3$status, status_description(sol3$status)))
+```
+
+Setting the lower bounds made the problem infeasible.
+
+```{r, error = TRUE}
+## Try to give an inappropriate b value
+model$update(b = c(5, 2))
+```
+
+The error message correctly indicates that b has wrong dimensions. 
+
+The methods exposed by the model object can be seen in the
+documentation for the object `piqp_model`.
+
+For example, we could query the problem dimensions.
+
+```{r}
+model$get_dims()
 ```
 
 ## 3. Dense and Sparse Interfaces
@@ -103,18 +151,18 @@ instructions and cache locality can be exploited more efficiently, but
 for sparse problems the sparse interface and result in significant
 speedups.
 
-These interfaces can be requested explicitly via the `interface`
+These interfaces can be requested explicitly via the `backend`
 parameter which can take on any value among `"dense"`, `"sparse"`, or
 `"auto"`, the default. The last value will automatically switch to a
 sparse interface if any of the supplied inputs ($A$, $P$, or $G$) is a
 sparse matrix; otherwise it uses the dense interface.
 
 ```{r}
-sparse_sol <- piqp(A, b, c, P, G, h, x_lb = x_lb, x_ub = x_ub, interface = "sparse")
+sparse_sol <- solve_piqp(P, c, A, b, G, h, x_lb, x_ub, backend = "sparse")
 str(sparse_sol)
 ```
 
-## 4. Another Example
+## 5. Another Example
 
 Suppose that we want to solve the following 2-dimensional quadratic programming problem:
 
@@ -138,44 +186,57 @@ following straight-forward formulation.
 
 ```{r}
 P <- matrix(2 * c(3, 0, 0, 2), nrow = 2, ncol = 2)
-P <- as(as(P, "generalMatrix"), "CsparseMatrix")
 c <- c(-1, -4)
-A <- Matrix::Matrix(c(1, -2), ncol = 2, sparse = TRUE)
-#A <- matrix(c(1, -2), ncol = 2)
+A <- matrix(c(1, -2), ncol = 2)
 b <- 0
 x_lb <- rep(-1.0, 2)
 x_ub <- rep(1.0, 2)
-sol <- piqp(A = A, b = b, c = c, P = P, x_lb = x_lb, x_ub = x_ub)
+sol <- solve_piqp(P = P, c = c, A = A, b = b, x_lb = x_lb, x_ub = x_ub)
 cat(sprintf("(Solution status, description): = (%d, %s)\n",
-            sol$status, status_description(sol$status)))
-cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", sol$pobj, sol$x[1], sol$x[2]))
+            sol$status, sol$info$status_desc))
+cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", sol$info$primal_obj, sol$x[1], sol$x[2]))
 ```
 
-But we can also choose to move the box constraints into the
-inequalities and it should yield the same solution.
+But we can also choose to move the upper box constraints into the inequalities.
+
+```{r}
+G <- diag(2)
+h <- c(1, 1)
+sol <- solve_piqp(P = P, c = c, A = A, b = b, G = G, h = h,
+                  x_lb = c(-1, -1), x_ub = c(Inf, Inf))
+cat(sprintf("(Solution status, description): = (%d, %s)\n",
+            sol$status, sol$info$status_desc))
+cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", sol$info$primal_obj, sol$x[1], sol$x[2]))
+```
+
+Or we can move both of them into the inequalities. 
 
 ```{r}
 G <- Matrix::Matrix(c(1, 0, -1, 0, 0, 1, 0, -1), byrow = TRUE,
                     nrow = 4, sparse = TRUE)
 h <- rep(1, 4)
-sol <- piqp(A = A, b = b, c = c, P = P, G = G, h = h)
+
+sol <- solve_piqp(A = A, b = b, c = c, P = P, G = G, h = h)
 cat(sprintf("(Solution status, description): = (%d, %s)\n",
             sol$status, status_description(sol$status)))
-cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", sol$pobj, sol$x[1], sol$x[2]))
+cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", sol$info$primal_obj, sol$x[1], sol$x[2]))
 ```
 
-## 5. Control parameters
+All of them will yield the same result.
+
+
+## 5. Solver parameters
 
 PIQP has a number of parameters that control its behavior, including
-verbosity, tolerances, etc.; see help on `piqp_control()`. As an
+verbosity, tolerances, etc.; see help on `piqp_settings()`. As an
 example, in the last problem, we can reduce the number of iterations.
 
 ```{r}
-s <- piqp(A = A, b = b, c = c, P = P, G = G, h = h,
-          control = list(max_iter = 3, verbose = TRUE)) ## Reduced number of iterations
+s <- solve_piqp(P = P, c = c, A = A, b = b, G = G, h = h,
+          settings = list(max_iter = 3)) ## Reduced number of iterations
 cat(sprintf("(Solution status, description): = (%d, %s)\n",
-            s$status, status_description(s$status)))
-cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", s$pobj, s$x[1], s$x[2]))
+            s$status, s$info$status_desc))
+cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", s$info$primal_obj, s$x[1], s$x[2]))
 ```
 
 Note the different status, which should always be checked in code. 
