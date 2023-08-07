@@ -1,8 +1,8 @@
 ---
-title: "PIQR Solver Example"
+title: "PIQR Solver Interface"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{PIQR Solver Example}
+  %\VignetteIndexEntry{PIQR Solver Interface}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
