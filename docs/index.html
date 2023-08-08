@@ -26,7 +26,7 @@
     
     <a class="navbar-brand me-2" href="index.html">piqp</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,11 +61,17 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="piqp">piqp<a class="anchor" aria-label="anchor" href="#piqp"></a>
+<div class="page-header"><h1 id="r-interface-for-piqp">R Interface for PIQP<a class="anchor" aria-label="anchor" href="#r-interface-for-piqp"></a>
 </h1></div>
-<!-- badges: start -->
-
-<p>R interface to <a href="https://predict-epfl.github.io/piqp/" class="external-link">Proximal Interior Point Quadratic Programming solver</a> from EPFL.</p>
+<p><a href="https://github.com/oxfordcontrol/clarabel-r/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/PREDICT-EPFL/piqp-r/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a> <a href="https://cran.r-project.org/package=piqp" class="external-link"><img src="https://www.r-pkg.org/badges/version/piqp" alt="CRAN_Status_Badge"></a> <a href="https://CRAN.R-project.org/package=piqp" class="external-link"><img src="https://cranlogs.r-pkg.org/badges/piqp"></a></p>
+<p>R interface for <a href="https://predict-epfl.github.io/piqp/" class="external-link">PIQP</a> a Proximal Interior Point Quadratic Programming solver.</p>
+<p>This package/interface is partly based on <a href="https://github.com/osqp/osqp-r" class="external-link">osqp-r</a>.</p>
+<p>Stable versions can be installed from CRAN as usual. Development versions from this repo can be installed via:</p>
+<pre><code><span><span class="co">## Install remotes packages if not available</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span> <span class="st">"remotes"</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/utils/installed.packages.html" class="external-link">installed.packages</a></span><span class="op">(</span><span class="op">)</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span> <span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span>, repository <span class="op">=</span> <span class="st">"https://cran.r-project.org"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"PREDICT-EPFL/piqp-r"</span><span class="op">)</span></span></code></pre>
 </div>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
@@ -78,8 +84,9 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/BSD-2-Clause" class="external-link">BSD_2_clause</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li>
+<a href="https://opensource.org/licenses/BSD-2-Clause" class="external-link">BSD_2_clause</a> + file <a href="LICENSE-text.html">LICENSE</a>
+</li>
 </ul>
 </div>
 
@@ -107,12 +114,7 @@
 </ul>
 </div>
 
-<div class="dev-status">
-<h2 data-toc-skip>Dev status</h2>
-<ul class="list-unstyled">
-<li><a href="https://github.com/bnaras/piqp/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/bnaras/piqp/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-</ul>
-</div>
+
 
   </aside>
 </div>
