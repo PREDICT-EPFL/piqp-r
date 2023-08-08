@@ -1,3 +1,5 @@
+^.*\.Rproj$
+^\.Rproj\.user$
 ^LICENSE\.md$
 ^_pkgdown\.yml$
 ^\.github$
@@ -23,4 +25,3 @@
 ^src/piqp/pyproject.toml
 ^src/piqp/setup.py
 ^src/piqp/tests
-
