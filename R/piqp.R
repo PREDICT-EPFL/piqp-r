@@ -1,3 +1,13 @@
+# This file is part of PIQP-R. It is partly based on osqp-r
+# (https://github.com/osqp/osqp-r) which is licensed
+# under Apache License 2.0
+#
+# Copyright (c) 2023 piqp-r authors
+# Copyright (c) 2019 Paul Goulart, Bartolomeo Stellato
+#
+# This source code is licensed under the BSD 2-Clause License found in the
+# LICENSE file in the root directory of this source tree.
+
 #' @title The PIQP Solver Model Class
 #'
 #' @description This class wraps around the PIQP C++ Solver and
@@ -118,16 +128,6 @@ piqp_model <-
                   }
                 )
               )
-
-# This file is part of PIQP-R. It is based on osqp-r
-# (https://github.com/osqp/osqp-r) which is licensed
-# under Apache License 2.0
-#
-# Copyright (c) 2023 EPFL
-# Copyright (c) 2019 Paul Goulart, Bartolomeo Stellato
-#
-# This source code is licensed under the BSD 2-Clause License found in the
-# LICENSE file in the root directory of this source tree.
 
 #' PIQP Solver object
 #'

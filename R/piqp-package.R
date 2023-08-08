@@ -1,6 +1,13 @@
+# This file is part of PIQP-R.
+#
+# Copyright (c) 2023 piqp-r authors
+#
+# This source code is licensed under the BSD 2-Clause License found in the
+# LICENSE file in the root directory of this source tree.
+
 #' R Interface to PIQP Solver
 #'
-#' @description PIQP is an embedded Proximal Interior Point Quadratic
+#' @description PIQP is an Proximal Interior Point Quadratic
 #'   Programming solver, which can solve dense and sparse quadratic
 #'   programs <https://doi.org/10.48550/arXiv.2304.00290>. Combining an infeasible
 #'   interior point method with the proximal method of multipliers,

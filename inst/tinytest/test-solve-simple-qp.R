@@ -1,8 +1,6 @@
-# This file is part of PIQP-R. It is based on osqp-r
-# (https://github.com/osqp/osqp-r) which is licensed
-# under Apache License 2.0
+# This file is part of PIQP-R.
 #
-# Copyright (c) 2023 EPFL
+# Copyright (c) 2023 piqp-r authors
 #
 # This source code is licensed under the BSD 2-Clause License found in the
 # LICENSE file in the root directory of this source tree.
