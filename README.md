@@ -1,6 +1,6 @@
 # R Interface for PIQP
 
-[![R-CMD-check](https://github.com/PREDICT-EPFL/piqp-r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/oxfordcontrol/clarabel-r/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/PREDICT-EPFL/piqp-r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PREDICT-EPFL/piqp-r/actions/workflows/R-CMD-check.yaml)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/piqp)](https://cran.r-project.org/package=piqp)
 [![](https://cranlogs.r-pkg.org/badges/piqp)](https://CRAN.R-project.org/package=piqp)
 
