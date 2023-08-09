@@ -5,9 +5,9 @@
 \alias{piqp-package}
 \title{R Interface to PIQP Solver}
 \description{
-PIQP is an embedded Proximal Interior Point Quadratic
+PIQP is an Proximal Interior Point Quadratic
 Programming solver, which can solve dense and sparse quadratic
-programs \url{https://doi.org/10.48550/arXiv.2304.00290}. Combining an infeasible
+programs (\url{https://arxiv.org/abs/2304.00290}). Combining an infeasible
 interior point method with the proximal method of multipliers,
 the algorithm can handle ill-conditioned convex QP problems
 without the need for linear independence of the constraints. The
