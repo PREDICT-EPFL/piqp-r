@@ -1,2 +1,1 @@
-CXX_STD = CXX14
 PKG_CPPFLAGS=-I./piqp/include -DR_LANG

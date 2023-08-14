@@ -1,7 +1,7 @@
-pandoc: 3.1.6
+pandoc: 3.1.6.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   piqp: piqp.html
-last_built: 2023-08-08T21:48Z
+last_built: 2023-08-11T14:38Z
 
