@@ -40,9 +40,9 @@ piqp_model <-
                     private$.dense_backend <- dense_backend
                     private$.dims <- dims
                     if (dense_backend) {
-                      private$.solver_ptr <- piqp_dense_setup(P, c, A, b, G, h, x_lb, x_ub, settings)
+                      private$.solver_ptr <-.Call('_piqp_piqp_dense_setup', PACKAGE = 'piqp', P, c, A, b, G, h, x_lb, x_ub, settings)
                     } else {
-                      private$.solver_ptr <- piqp_sparse_setup(P, c, A, b, G, h, x_lb, x_ub, settings)
+                      private$.solver_ptr <- .Call('_piqp_piqp_sparse_setup', PACKAGE = 'piqp', P, c, A, b, G, h, x_lb, x_ub, settings)
                     }
                   }
                  ,
@@ -50,7 +50,7 @@ piqp_model <-
                   #' Solve the QP model
                   #' @return a list containing the solution
                   solve = function() {
-                    solve_model(private$.solver_ptr, private$.dense_backend)                
+                    .Call('_piqp_solve_model', PACKAGE = 'piqp', private$.solver_ptr, private$.dense_backend)
                   }
                  ,
                   #' @description
@@ -102,16 +102,16 @@ piqp_model <-
                     }
 
                    if (sparse_backend) {
-                      piqp_update_sparse(private$.solver_ptr, P, c, A, b, G, h, x_lb, x_ub)
+                      invisible(.Call('_piqp_piqp_update_sparse', PACKAGE = 'piqp', private$.solver_ptr, P, c, A, b, G, h, x_lb, x_ub))
                     } else {
-                      piqp_update_dense(private$.solver_ptr, P, c, A, b, G, h, x_lb, x_ub)
+                      invisible(.Call('_piqp_piqp_update_dense', PACKAGE = 'piqp', private$.solver_ptr, P, c, A, b, G, h, x_lb, x_ub))
                     }
                   }
                  ,
                   #' @description
                   #' Obtain the current settings for this model
                   get_settings = function() {
-                    get_settings(private$.solver_ptr, private$.dense_backend)
+                    .Call('_piqp_get_settings', PACKAGE = 'piqp', private$.solver_ptr, private$.dense_backend)
                   }
                  ,
                   #' @description
@@ -124,7 +124,7 @@ piqp_model <-
                   #' Update the current settings with new values for this model
                   #' @param new_settings a list of named values for settings, default empty list; see [piqp_settings()] for a comprehensive list of defaults
                   update_settings = function(new_settings = list()) {
-                    update_settings(private$.solver_ptr, private$.dense_backend, new_settings)
+                    invisible(.Call('_piqp_update_settings', PACKAGE = 'piqp', private$.solver_ptr, private$.dense_backend, settings))
                   }
                 )
               )
@@ -416,22 +416,3 @@ status_description <- function(code) {
             )
   desc[code + 11]
 }
-
-## Ensure that a matrix is of class "dgCMatrix"
-## Note: in Matrix, a sparseMatrix need not be dgCMatrix;
-## it could be ddiMatrix, dgTMatrix, etc. So coerce!
-#' @importFrom methods as
-ensure_dgc_matrix <- function(mat, nrow, ncol) {
-  if (inherits(mat, "simple_triplet_matrix")) {
-    csc <- make_csc_matrix(mat)
-    Matrix::sparseMatrix(i = csc[["matind"]], p = csc[["matbeg"]], x = csc[["values"]],
-                         dims = c(nrow, ncol), index1 = FALSE)
-  } else {
-    if (!inherits(mat, "dgCMatrix")) {
-      as(as(mat, "generalMatrix"), "CsparseMatrix")
-    } else {
-      mat
-    }
-  }
-}
-    
