@@ -1,4 +1,4 @@
-# R Interface for PIQP <img src="man/figures/logo.png" align="right" />
+# R Interface for PIQP <img src="man/figures/logo.png" width="100" align="right" />
 
 [![R-CMD-check](https://github.com/PREDICT-EPFL/piqp-r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PREDICT-EPFL/piqp-r/actions/workflows/R-CMD-check.yaml)
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/piqp)](https://cran.r-project.org/package=piqp)
