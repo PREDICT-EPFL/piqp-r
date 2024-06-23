@@ -11,9 +11,10 @@ Description: An embedded proximal interior point quadratic programming solver, w
 License: BSD_2_clause + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 URL: https://predict-epfl.github.io/piqp-r/
 BugReports: https://github.com/PREDICT-EPFL/piqp-r/issues
+SystemRequirements: C++17
 LinkingTo: 
     Rcpp,
     RcppEigen
