@@ -18,7 +18,15 @@ small dense problems, vectorized instructions and cache locality
 can be exploited more efficiently. Allocation free problem
 updates and re-solves are also provided.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://predict-epfl.github.io/piqp-r/}
+  \item Report bugs at \url{https://github.com/PREDICT-EPFL/piqp-r/issues}
+}
+
+}
 \author{
 Balasubramanian Narasimhan, Roland Schwan (C), Yuning Jiang, Daniel Kuhn, Colin N. Jones
 }
-\keyword{package}
+\keyword{internal}

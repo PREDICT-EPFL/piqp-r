@@ -25,3 +25,10 @@
 ^src/piqp/pyproject.toml
 ^src/piqp/setup.py
 ^src/piqp/tests
+^src/piqp/cmake
+^src/piqp/src
+^\.claude$
+^CLAUDE\.md$
+^src/piqp/include/piqp/utils/ghc_filesystem\.hpp$
+^src/\.r_patched$
+^cleanup$

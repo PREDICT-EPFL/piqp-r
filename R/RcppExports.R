@@ -9,23 +9,23 @@ update_settings <- function(solver_p, dense_backend, settings) {
     invisible(.Call('_piqp_update_settings', PACKAGE = 'piqp', solver_p, dense_backend, settings))
 }
 
-piqp_dense_setup <- function(P, c, A, b, G, h, x_lb, x_ub, settings) {
-    .Call('_piqp_piqp_dense_setup', PACKAGE = 'piqp', P, c, A, b, G, h, x_lb, x_ub, settings)
+piqp_dense_setup <- function(P, c, A, b, G, h_l, h_u, x_l, x_u, settings) {
+    .Call('_piqp_piqp_dense_setup', PACKAGE = 'piqp', P, c, A, b, G, h_l, h_u, x_l, x_u, settings)
 }
 
-piqp_sparse_setup <- function(P, c, A, b, G, h, x_lb, x_ub, settings) {
-    .Call('_piqp_piqp_sparse_setup', PACKAGE = 'piqp', P, c, A, b, G, h, x_lb, x_ub, settings)
+piqp_sparse_setup <- function(P, c, A, b, G, h_l, h_u, x_l, x_u, settings) {
+    .Call('_piqp_piqp_sparse_setup', PACKAGE = 'piqp', P, c, A, b, G, h_l, h_u, x_l, x_u, settings)
 }
 
 solve_model <- function(solver_p, dense_backend) {
     .Call('_piqp_solve_model', PACKAGE = 'piqp', solver_p, dense_backend)
 }
 
-piqp_update_dense <- function(solver_p, P, c, A, b, G, h, x_lb, x_ub) {
-    invisible(.Call('_piqp_piqp_update_dense', PACKAGE = 'piqp', solver_p, P, c, A, b, G, h, x_lb, x_ub))
+piqp_update_dense <- function(solver_p, P, c, A, b, G, h_l, h_u, x_l, x_u) {
+    invisible(.Call('_piqp_piqp_update_dense', PACKAGE = 'piqp', solver_p, P, c, A, b, G, h_l, h_u, x_l, x_u))
 }
 
-piqp_update_sparse <- function(solver_p, P, c, A, b, G, h, x_lb, x_ub) {
-    invisible(.Call('_piqp_piqp_update_sparse', PACKAGE = 'piqp', solver_p, P, c, A, b, G, h, x_lb, x_ub))
+piqp_update_sparse <- function(solver_p, P, c, A, b, G, h_l, h_u, x_l, x_u) {
+    invisible(.Call('_piqp_piqp_update_sparse', PACKAGE = 'piqp', solver_p, P, c, A, b, G, h_l, h_u, x_l, x_u))
 }
 

@@ -41,7 +41,7 @@ vignettes/*.pdf
 .Renviron
 
 # pkgdown site
-# docs/
+docs/
 
 # translation temp files
 po/*~
@@ -53,3 +53,7 @@ inst/doc
 ## Objects
 src/*.o
 src/*.so
+
+## Claude
+.claude/
+CLAUDE.md
