@@ -37,8 +37,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // piqp_dense_setup
-SEXP piqp_dense_setup(Eigen::Map<Eigen::MatrixXd> P, Eigen::Map<Eigen::VectorXd> c, Eigen::Map<Eigen::MatrixXd> A, Eigen::Map<Eigen::VectorXd> b, Eigen::Map<Eigen::MatrixXd> G, Eigen::Map<Eigen::VectorXd> h, Eigen::Map<Eigen::VectorXd> x_lb, Eigen::Map<Eigen::VectorXd> x_ub, Rcpp::List settings);
-RcppExport SEXP _piqp_piqp_dense_setup(SEXP PSEXP, SEXP cSEXP, SEXP ASEXP, SEXP bSEXP, SEXP GSEXP, SEXP hSEXP, SEXP x_lbSEXP, SEXP x_ubSEXP, SEXP settingsSEXP) {
+SEXP piqp_dense_setup(Eigen::Map<Eigen::MatrixXd> P, Eigen::Map<Eigen::VectorXd> c, Eigen::Map<Eigen::MatrixXd> A, Eigen::Map<Eigen::VectorXd> b, Eigen::Map<Eigen::MatrixXd> G, Eigen::Map<Eigen::VectorXd> h_l, Eigen::Map<Eigen::VectorXd> h_u, Eigen::Map<Eigen::VectorXd> x_l, Eigen::Map<Eigen::VectorXd> x_u, Rcpp::List settings);
+RcppExport SEXP _piqp_piqp_dense_setup(SEXP PSEXP, SEXP cSEXP, SEXP ASEXP, SEXP bSEXP, SEXP GSEXP, SEXP h_lSEXP, SEXP h_uSEXP, SEXP x_lSEXP, SEXP x_uSEXP, SEXP settingsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -47,17 +47,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd> >::type A(ASEXP);
     Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type b(bSEXP);
     Rcpp::traits::input_parameter< Eigen::Map<Eigen::MatrixXd> >::type G(GSEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type h(hSEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type x_lb(x_lbSEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type x_ub(x_ubSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type h_l(h_lSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type h_u(h_uSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type x_l(x_lSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type x_u(x_uSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type settings(settingsSEXP);
-    rcpp_result_gen = Rcpp::wrap(piqp_dense_setup(P, c, A, b, G, h, x_lb, x_ub, settings));
+    rcpp_result_gen = Rcpp::wrap(piqp_dense_setup(P, c, A, b, G, h_l, h_u, x_l, x_u, settings));
     return rcpp_result_gen;
 END_RCPP
 }
 // piqp_sparse_setup
-SEXP piqp_sparse_setup(Eigen::Map<Eigen::SparseMatrix<double>> P, Eigen::Map<Eigen::VectorXd> c, Eigen::Map<Eigen::SparseMatrix<double>> A, Eigen::Map<Eigen::VectorXd> b, Eigen::Map<Eigen::SparseMatrix<double>> G, Eigen::Map<Eigen::VectorXd> h, Eigen::Map<Eigen::VectorXd> x_lb, Eigen::Map<Eigen::VectorXd> x_ub, Rcpp::List settings);
-RcppExport SEXP _piqp_piqp_sparse_setup(SEXP PSEXP, SEXP cSEXP, SEXP ASEXP, SEXP bSEXP, SEXP GSEXP, SEXP hSEXP, SEXP x_lbSEXP, SEXP x_ubSEXP, SEXP settingsSEXP) {
+SEXP piqp_sparse_setup(Eigen::Map<Eigen::SparseMatrix<double>> P, Eigen::Map<Eigen::VectorXd> c, Eigen::Map<Eigen::SparseMatrix<double>> A, Eigen::Map<Eigen::VectorXd> b, Eigen::Map<Eigen::SparseMatrix<double>> G, Eigen::Map<Eigen::VectorXd> h_l, Eigen::Map<Eigen::VectorXd> h_u, Eigen::Map<Eigen::VectorXd> x_l, Eigen::Map<Eigen::VectorXd> x_u, Rcpp::List settings);
+RcppExport SEXP _piqp_piqp_sparse_setup(SEXP PSEXP, SEXP cSEXP, SEXP ASEXP, SEXP bSEXP, SEXP GSEXP, SEXP h_lSEXP, SEXP h_uSEXP, SEXP x_lSEXP, SEXP x_uSEXP, SEXP settingsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -66,11 +67,12 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::Map<Eigen::SparseMatrix<double>> >::type A(ASEXP);
     Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type b(bSEXP);
     Rcpp::traits::input_parameter< Eigen::Map<Eigen::SparseMatrix<double>> >::type G(GSEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type h(hSEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type x_lb(x_lbSEXP);
-    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type x_ub(x_ubSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type h_l(h_lSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type h_u(h_uSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type x_l(x_lSEXP);
+    Rcpp::traits::input_parameter< Eigen::Map<Eigen::VectorXd> >::type x_u(x_uSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type settings(settingsSEXP);
-    rcpp_result_gen = Rcpp::wrap(piqp_sparse_setup(P, c, A, b, G, h, x_lb, x_ub, settings));
+    rcpp_result_gen = Rcpp::wrap(piqp_sparse_setup(P, c, A, b, G, h_l, h_u, x_l, x_u, settings));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -87,8 +89,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // piqp_update_dense
-void piqp_update_dense(SEXP solver_p, Rcpp::Nullable<Eigen::Map<Mat>> P, Rcpp::Nullable<Eigen::Map<Vec>> c, Rcpp::Nullable<Eigen::Map<Mat>> A, Rcpp::Nullable<Eigen::Map<Vec>> b, Rcpp::Nullable<Eigen::Map<Mat>> G, Rcpp::Nullable<Eigen::Map<Vec>> h, Rcpp::Nullable<Eigen::Map<Vec>> x_lb, Rcpp::Nullable<Eigen::Map<Vec>> x_ub);
-RcppExport SEXP _piqp_piqp_update_dense(SEXP solver_pSEXP, SEXP PSEXP, SEXP cSEXP, SEXP ASEXP, SEXP bSEXP, SEXP GSEXP, SEXP hSEXP, SEXP x_lbSEXP, SEXP x_ubSEXP) {
+void piqp_update_dense(SEXP solver_p, Rcpp::Nullable<Eigen::Map<Mat>> P, Rcpp::Nullable<Eigen::Map<Vec>> c, Rcpp::Nullable<Eigen::Map<Mat>> A, Rcpp::Nullable<Eigen::Map<Vec>> b, Rcpp::Nullable<Eigen::Map<Mat>> G, Rcpp::Nullable<Eigen::Map<Vec>> h_l, Rcpp::Nullable<Eigen::Map<Vec>> h_u, Rcpp::Nullable<Eigen::Map<Vec>> x_l, Rcpp::Nullable<Eigen::Map<Vec>> x_u);
+RcppExport SEXP _piqp_piqp_update_dense(SEXP solver_pSEXP, SEXP PSEXP, SEXP cSEXP, SEXP ASEXP, SEXP bSEXP, SEXP GSEXP, SEXP h_lSEXP, SEXP h_uSEXP, SEXP x_lSEXP, SEXP x_uSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type solver_p(solver_pSEXP);
@@ -97,16 +99,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Mat>> >::type A(ASEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type b(bSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Mat>> >::type G(GSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type h(hSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type x_lb(x_lbSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type x_ub(x_ubSEXP);
-    piqp_update_dense(solver_p, P, c, A, b, G, h, x_lb, x_ub);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type h_l(h_lSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type h_u(h_uSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type x_l(x_lSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type x_u(x_uSEXP);
+    piqp_update_dense(solver_p, P, c, A, b, G, h_l, h_u, x_l, x_u);
     return R_NilValue;
 END_RCPP
 }
 // piqp_update_sparse
-void piqp_update_sparse(SEXP solver_p, Rcpp::Nullable<Eigen::Map<SparseMat>> P, Rcpp::Nullable<Eigen::Map<Vec>> c, Rcpp::Nullable<Eigen::Map<SparseMat>> A, Rcpp::Nullable<Eigen::Map<Vec>> b, Rcpp::Nullable<Eigen::Map<SparseMat>> G, Rcpp::Nullable<Eigen::Map<Vec>> h, Rcpp::Nullable<Eigen::Map<Vec>> x_lb, Rcpp::Nullable<Eigen::Map<Vec>> x_ub);
-RcppExport SEXP _piqp_piqp_update_sparse(SEXP solver_pSEXP, SEXP PSEXP, SEXP cSEXP, SEXP ASEXP, SEXP bSEXP, SEXP GSEXP, SEXP hSEXP, SEXP x_lbSEXP, SEXP x_ubSEXP) {
+void piqp_update_sparse(SEXP solver_p, Rcpp::Nullable<Eigen::Map<SparseMat>> P, Rcpp::Nullable<Eigen::Map<Vec>> c, Rcpp::Nullable<Eigen::Map<SparseMat>> A, Rcpp::Nullable<Eigen::Map<Vec>> b, Rcpp::Nullable<Eigen::Map<SparseMat>> G, Rcpp::Nullable<Eigen::Map<Vec>> h_l, Rcpp::Nullable<Eigen::Map<Vec>> h_u, Rcpp::Nullable<Eigen::Map<Vec>> x_l, Rcpp::Nullable<Eigen::Map<Vec>> x_u);
+RcppExport SEXP _piqp_piqp_update_sparse(SEXP solver_pSEXP, SEXP PSEXP, SEXP cSEXP, SEXP ASEXP, SEXP bSEXP, SEXP GSEXP, SEXP h_lSEXP, SEXP h_uSEXP, SEXP x_lSEXP, SEXP x_uSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type solver_p(solver_pSEXP);
@@ -115,10 +118,11 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<SparseMat>> >::type A(ASEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type b(bSEXP);
     Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<SparseMat>> >::type G(GSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type h(hSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type x_lb(x_lbSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type x_ub(x_ubSEXP);
-    piqp_update_sparse(solver_p, P, c, A, b, G, h, x_lb, x_ub);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type h_l(h_lSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type h_u(h_uSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type x_l(x_lSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Eigen::Map<Vec>> >::type x_u(x_uSEXP);
+    piqp_update_sparse(solver_p, P, c, A, b, G, h_l, h_u, x_l, x_u);
     return R_NilValue;
 END_RCPP
 }
@@ -126,11 +130,11 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_piqp_get_settings", (DL_FUNC) &_piqp_get_settings, 2},
     {"_piqp_update_settings", (DL_FUNC) &_piqp_update_settings, 3},
-    {"_piqp_piqp_dense_setup", (DL_FUNC) &_piqp_piqp_dense_setup, 9},
-    {"_piqp_piqp_sparse_setup", (DL_FUNC) &_piqp_piqp_sparse_setup, 9},
+    {"_piqp_piqp_dense_setup", (DL_FUNC) &_piqp_piqp_dense_setup, 10},
+    {"_piqp_piqp_sparse_setup", (DL_FUNC) &_piqp_piqp_sparse_setup, 10},
     {"_piqp_solve_model", (DL_FUNC) &_piqp_solve_model, 2},
-    {"_piqp_piqp_update_dense", (DL_FUNC) &_piqp_piqp_update_dense, 9},
-    {"_piqp_piqp_update_sparse", (DL_FUNC) &_piqp_piqp_update_sparse, 9},
+    {"_piqp_piqp_update_dense", (DL_FUNC) &_piqp_piqp_update_dense, 10},
+    {"_piqp_piqp_update_sparse", (DL_FUNC) &_piqp_piqp_update_sparse, 10},
     {NULL, NULL, 0}
 };
 

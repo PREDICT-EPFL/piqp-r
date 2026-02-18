@@ -21,8 +21,12 @@
 #'   updates and re-solves are also provided.
 #'
 #' @name piqp-package
-#' @useDynLib piqp 
+#' @useDynLib piqp
 #' @importFrom Rcpp evalCpp
 #' @author Balasubramanian Narasimhan, Roland Schwan (C), Yuning Jiang, Daniel Kuhn, Colin N. Jones
 #' @keywords internal
 "_PACKAGE"
+
+.onLoad <- function(libname, pkgname) {
+  S7::methods_register()
+}

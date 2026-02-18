@@ -25,3 +25,7 @@
 ^src/piqp/pyproject.toml
 ^src/piqp/setup.py
 ^src/piqp/tests
+^src/piqp/cmake
+^src/piqp/src
+^\.claude$
+^CLAUDE\.md$

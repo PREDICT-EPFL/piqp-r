@@ -7,7 +7,7 @@
 make_csc_symm_matrix(m)
 }
 \arguments{
-\item{x}{a matrix or a simple triplet form matrix}
+\item{m}{a matrix or a simple triplet form matrix}
 }
 \value{
 a list of row pointer, column pointer, and values corresponding to a \link[Matrix:dsCMatrix-class]{Matrix::dsCMatrix} object

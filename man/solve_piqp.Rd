@@ -10,9 +10,10 @@ solve_piqp(
   A = NULL,
   b = NULL,
   G = NULL,
-  h = NULL,
-  x_lb = NULL,
-  x_ub = NULL,
+  h_l = NULL,
+  h_u = NULL,
+  x_l = NULL,
+  x_u = NULL,
   settings = list(),
   backend = c("auto", "sparse", "dense")
 )
@@ -28,15 +29,17 @@ solve_piqp(
 
 \item{G}{dense or sparse matrix of class dgCMatrix or coercible into such}
 
-\item{h}{numeric vector}
+\item{h_l}{numeric vector of lower inequality bounds, default \code{NULL}
+indicating \code{-Inf} for all inequality constraints}
 
-\item{x_lb}{a numeric vector of lower bounds, default \code{NULL}
-indicating \code{-Inf} for all variables, otherwise should be number
-of variables long}
+\item{h_u}{numeric vector of upper inequality bounds, default \code{NULL}
+indicating \code{Inf} for all inequality constraints}
 
-\item{x_ub}{a numeric vector of upper bounds, default \code{NULL}
-indicating \code{Inf} for all variables, otherwise should be number of
-variables long}
+\item{x_l}{a numeric vector of lower variable bounds, default \code{NULL}
+indicating \code{-Inf} for all variables}
+
+\item{x_u}{a numeric vector of upper variable bounds, default \code{NULL}
+indicating \code{Inf} for all variables}
 
 \item{settings}{list with optimization parameters, empty by default; see \code{\link[=piqp_settings]{piqp_settings()}} for a comprehensive list of parameters that may be used}
 
@@ -48,9 +51,9 @@ A list with elements solution elements
 \description{
 Solves \deqn{arg\min_x 0.5 x'P x + c'x}{argmin_x 0.5 x'P x + c'x}
 s.t. \deqn{A x = b}{A x = b}
-\deqn{G x \leq h}{G x <= h}
-\deqn{x_{lb} \leq x \leq x_{ub}}{x_lb <= x <= x_ub}
-for real matrices P (nxn, positive semidefinite), A (pxn) with m number of equality constraints, and G (mxn) with m number of inequality constraints
+\deqn{h_l \leq G x \leq h_u}{h_l <= G x <= h_u}
+\deqn{x_l \leq x \leq x_u}{x_l <= x <= x_u}
+for real matrices P (nxn, positive semidefinite), A (pxn) with p number of equality constraints, and G (mxn) with m number of inequality constraints
 }
 \examples{
 ## example, adapted from PIQP documentation
@@ -63,14 +66,14 @@ c <- c(-1., -4.)
 A <- Matrix(c(1., -2.), 1, 2, sparse = TRUE)
 b <- c(1.)
 G <- Matrix(c(1., 2., -1., 0.), 2, 2, sparse = TRUE)
-h <- c(0.2, -1.)
-x_lb <- c(-1., -Inf)
-x_ub <- c(1., Inf)
+h_u <- c(0.2, -1.)
+x_l <- c(-1., -Inf)
+x_u <- c(1., Inf)
 
 settings <- list(verbose = TRUE)
 
 # Solve with PIQP
-res <- solve_piqp(P, c, A, b, G, h, x_lb, x_ub, settings)
+res <- solve_piqp(P, c, A, b, G, h_u = h_u, x_l = x_l, x_u = x_u, settings = settings)
 res$x
 
 }

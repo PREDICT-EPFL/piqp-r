@@ -10,9 +10,10 @@ piqp(
   A = NULL,
   b = NULL,
   G = NULL,
-  h = NULL,
-  x_lb = NULL,
-  x_ub = NULL,
+  h_l = NULL,
+  h_u = NULL,
+  x_l = NULL,
+  x_u = NULL,
   settings = list(),
   backend = c("auto", "sparse", "dense")
 )
@@ -28,23 +29,26 @@ piqp(
 
 \item{G}{dense or sparse matrix of class dgCMatrix or coercible into such}
 
-\item{h}{numeric vector}
+\item{h_l}{numeric vector of lower inequality bounds, default \code{NULL}
+indicating \code{-Inf} for all inequality constraints}
 
-\item{x_lb}{a numeric vector of lower bounds, default \code{NULL}
-indicating \code{-Inf} for all variables, otherwise should be number
-of variables long}
+\item{h_u}{numeric vector of upper inequality bounds, default \code{NULL}
+indicating \code{Inf} for all inequality constraints}
 
-\item{x_ub}{a numeric vector of upper bounds, default \code{NULL}
-indicating \code{Inf} for all variables, otherwise should be number of
-variables long}
+\item{x_l}{a numeric vector of lower variable bounds, default \code{NULL}
+indicating \code{-Inf} for all variables}
+
+\item{x_u}{a numeric vector of upper variable bounds, default \code{NULL}
+indicating \code{Inf} for all variables}
 
 \item{settings}{list with optimization parameters, empty by default; see \code{\link[=piqp_settings]{piqp_settings()}} for a comprehensive list of parameters that may be used}
 
 \item{backend}{which backend to use, if auto and P, A or G are sparse then sparse backend is used (\code{"auto"}, \code{"sparse"} or \code{"dense"}) (\code{"auto"})}
 }
 \value{
-An R6-object of class "piqp_model" with methods defined which can be further
-used to solve the problem with updated settings / parameters.
+An S7 object of class "piqp_model" with methods
+\code{solve()}, \code{update()}, \code{\link[=get_settings]{get_settings()}}, \code{\link[=get_dims]{get_dims()}}, \code{\link[=update_settings]{update_settings()}}
+which can be used to solve the problem with updated settings / parameters.
 }
 \description{
 PIQP Solver object
@@ -57,15 +61,18 @@ problem, modify the optimization settings or attempt to solve the problem.
 }
 \section{Usage}{
 
-\preformatted{model = piqp(P = NULL, c = NULL, A = NULL, b = NULL, G = NULL, h = NULL, x_lb = NULL, x_ub = NULL, settings = piqp_settings(), backend = c("auto", "sparse", "dense"))
+\preformatted{model = piqp(P = NULL, c = NULL, A = NULL, b = NULL, G = NULL,
+             h_l = NULL, h_u = NULL, x_l = NULL, x_u = NULL,
+             settings = piqp_settings(),
+             backend = c("auto", "sparse", "dense"))
 
-model$solve()
-model$update(P = NULL, c = NULL, A = NULL, b = NULL, G = NULL, h = NULL, x_lb = NULL, x_ub = NULL)
-model$get_settings()
-model$get_dims()
-model$update_settings(new_settings = piqp_settings())
+solve(model)
+update(model, P = NULL, c = NULL, A = NULL, b = NULL, G = NULL,
+       h_l = NULL, h_u = NULL, x_l = NULL, x_u = NULL)
+get_settings(model)
+get_dims(model)
+update_settings(model, new_settings = piqp_settings())
 
-print(model)
 }
 }
 
@@ -80,25 +87,25 @@ c <- c(-1., -4.)
 A <- Matrix(c(1., -2.), 1, 2, sparse = TRUE)
 b <- c(1.)
 G <- Matrix(c(1., 2., -1., 0.), 2, 2, sparse = TRUE)
-h <- c(0.2, -1.)
-x_lb <- c(-1., -Inf)
-x_ub <- c(1., Inf)
+h_u <- c(0.2, -1.)
+x_l <- c(-1., -Inf)
+x_u <- c(1., Inf)
 
 settings <- list(verbose = TRUE)
 
-model <- piqp(P, c, A, b, G, h, x_lb, x_ub, settings)
+model <- piqp(P, c, A, b, G, h_u = h_u, x_l = x_l, x_u = x_u, settings = settings)
 
 # Solve
-res <- model$solve()
+res <- solve(model)
 res$x
 
 # Define new data
 A_new <- Matrix(c(1., -3.), 1, 2, sparse = TRUE)
-h_new <- c(2., 1.)
+h_u_new <- c(2., 1.)
 
 # Update model and solve again
-model$update(A = A_new, h = h_new)
-res <- model$solve()
+update(model, A = A_new, h_u = h_u_new)
+res <- solve(model)
 res$x
 
 }
