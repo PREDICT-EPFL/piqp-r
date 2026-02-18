@@ -1,0 +1,61 @@
+# R Interface for PIQP
+
+[![R-CMD-check](https://github.com/PREDICT-EPFL/piqp-r/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/PREDICT-EPFL/piqp-r/actions/workflows/R-CMD-check.yaml)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/piqp)](https://cran.r-project.org/package=piqp)
+[![](https://cranlogs.r-pkg.org/badges/piqp)](https://CRAN.R-project.org/package=piqp)
+
+R interface for [PIQP](https://predict-epfl.github.io/piqp/) a Proximal
+Interior Point Quadratic Programming solver.
+
+This package/interface is partly based on
+[osqp-r](https://github.com/osqp/osqp-r).
+
+Stable versions can be installed from CRAN as usual. Development
+versions from this repo can be installed via:
+
+    ## Install remotes packages if not available
+    if (! "remotes" %in% installed.packages()[, 1] ) {
+        install.packages("remotes", repository = "https://cran.r-project.org")
+    }
+    remotes::install_github("PREDICT-EPFL/piqp-r")
+
+# Package index
+
+## All functions
+
+- [`get_dims()`](get_dims.md) : Get dimensions of a PIQP model
+
+- [`get_settings()`](get_settings.md) : Get settings of a PIQP model
+
+- [`make_csc_matrix()`](make_csc_matrix.md) :
+
+  Convert a plain matrix or simple triplet form matrix to a
+  [Matrix::dgCMatrix](https://rdrr.io/pkg/Matrix/man/dgCMatrix-class.html)
+  (implicit) form
+
+- [`make_csc_symm_matrix()`](make_csc_symm_matrix.md) :
+
+  Convert a plain matrix or simple triplet form matrix to a
+  [Matrix::dsCMatrix](https://rdrr.io/pkg/Matrix/man/dsCMatrix-class.html)
+  (implicit, upper) form
+
+- [`piqp()`](piqp.md) : PIQP Solver object
+
+- [`piqp_model()`](piqp_model.md) : The PIQP Solver Model Class
+
+- [`piqp_settings()`](piqp_settings.md) : Settings parameters with
+  default values and types in parenthesis
+
+- [`solve_piqp()`](solve_piqp.md) : PIQP Solver
+
+- [`status_description()`](status_description.md) : Return the solver
+  status description string
+
+- [`update_settings()`](update_settings.md) : Update settings of a PIQP
+  model
+
+# Articles
+
+### All vignettes
+
+- [PIQP Solver Interface](piqp.md):
