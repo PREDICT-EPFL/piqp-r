@@ -1,0 +1,22 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/piqp.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
+<url><loc>/reference/get_dims.html</loc></url>
+<url><loc>/reference/get_settings.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/make_csc_matrix.html</loc></url>
+<url><loc>/reference/make_csc_symm_matrix.html</loc></url>
+<url><loc>/reference/piqp-package.html</loc></url>
+<url><loc>/reference/piqp.html</loc></url>
+<url><loc>/reference/piqp_model.html</loc></url>
+<url><loc>/reference/piqp_settings.html</loc></url>
+<url><loc>/reference/solve_piqp.html</loc></url>
+<url><loc>/reference/status_description.html</loc></url>
+<url><loc>/reference/update_settings.html</loc></url>
+</urlset>
+
