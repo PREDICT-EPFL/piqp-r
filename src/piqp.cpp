@@ -8,6 +8,7 @@
 #include <Rcpp.h>
 #include <RcppEigen.h>
 #include "piqp_types.h"
+
 #include <piqp/piqp.hpp>
 
 // [[Rcpp::depends(RcppEigen)]]

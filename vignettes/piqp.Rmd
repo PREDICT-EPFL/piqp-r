@@ -104,9 +104,9 @@ Users who wish to solve QP problems will mostly use the `solve_piqp()`
 function. Behind the scenes, `solve_piqp()` creates a solver object
 and calls methods on the object to obtain the solution. The solver
 object can be created explicitly using `piqp()` and provides more
-elaborate facilities for updating problem data. This can be very
-efficient when one is solving the same kind of problem over and
-over.
+elaborate facilities for updating problem data and warm-starting
+subsequent solves, which can be very efficient when one is solving
+a sequence of related problems.
 
 The above problem could be solved using the solver model object thus:
 
@@ -116,36 +116,58 @@ sol2 <- solve(model)
 identical(sol, sol2)
 ```
 
-Indeed, this is exactly what `solve_piqp()` does. But this interface
-allows us to update the settings, the bounds, etc. and resolve the
-same problem more efficiently.
-
-```{r}
-update(model, x_l = c(0, 0))
-sol3 <- solve(model)
-cat(sprintf("(Solution status, description): = (%d, %s)\n",
-            sol3$status, status_description(sol3$status)))
-```
-
-Setting the lower bounds made the problem infeasible.
-
-```{r, error = TRUE}
-## Try to give an inappropriate b value
-update(model, b = c(5, 2))
-```
-
-The error message correctly indicates that `b` has wrong dimensions.
-
-The generic functions exposed by the model object can be seen in the
-documentation for the object `piqp_model`.
-
-For example, we could query the problem dimensions.
+Indeed, this is exactly what `solve_piqp()` does. The generic
+functions `solve()`, `update()`, `get_settings()`, `get_dims()`, and
+`update_settings()` are available on the model object.
 
 ```{r}
 get_dims(model)
 ```
 
-## 3. Dense and Sparse Interfaces
+### Updating problem data and re-solving
+
+The real advantage of the model object is the ability to update
+problem data and re-solve. When `update()` is called, only the
+changed data is passed to the solver, and the solver can warm-start
+from the previous solution. This is much more efficient than creating
+a new model from scratch each time.
+
+Suppose we want to tighten the inequality bounds and change the
+linear cost. We update the model in place and re-solve:
+
+```{r}
+update(model, c = c(-2, -3), h_u = c(0.1, -1.5))
+sol3 <- solve(model)
+cat(sprintf("Status: %s\n", sol3$info$status_desc))
+cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n",
+            sol3$info$primal_obj, sol3$x[1], sol3$x[2]))
+```
+
+We can continue updating. Here we relax the variable bounds and
+change the equality constraint:
+
+```{r}
+update(model, A = matrix(c(1, -1), nrow = 1), b = 0,
+       x_l = c(-2, -2), x_u = c(2, 2))
+sol4 <- solve(model)
+cat(sprintf("Status: %s\n", sol4$info$status_desc))
+cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n",
+            sol4$info$primal_obj, sol4$x[1], sol4$x[2]))
+```
+
+Dimension mismatches are caught:
+
+```{r, error = TRUE}
+update(model, b = c(5, 2))
+```
+
+Settings can also be updated between solves:
+
+```{r}
+update_settings(model, new_settings = list(verbose = FALSE, max_iter = 100L))
+```
+
+## 4. Dense and Sparse Interfaces
 
 PIQP supports dense and sparse problem formulations. For small and
 dense problems the dense interface is preferred since vectorized
@@ -227,7 +249,7 @@ cat(sprintf("Objective: %f, solution: (x1, x2) = (%f, %f)\n", sol$info$primal_ob
 All of them will yield the same result.
 
 
-## 5. Solver parameters
+## 6. Solver parameters
 
 PIQP has a number of parameters that control its behavior, including
 verbosity, tolerances, etc.; see help on `piqp_settings()`. As an

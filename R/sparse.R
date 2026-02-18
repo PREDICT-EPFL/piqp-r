@@ -96,7 +96,7 @@ make_csc_symm_matrix.simple_triplet_matrix  <- function(m) {
 ## Ensure that a matrix is of class "dgCMatrix"
 ## Note: in Matrix, a sparseMatrix need not be dgCMatrix;
 ## it could be ddiMatrix, dgTMatrix, etc. So coerce!
-#' @importFrom methods as
+#' @importFrom methods as is
 ensure_dgc_matrix <- function(mat, nrow, ncol) {
   if (inherits(mat, "simple_triplet_matrix")) {
     csc <- make_csc_matrix(mat)

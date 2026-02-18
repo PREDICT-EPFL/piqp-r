@@ -29,3 +29,6 @@
 ^src/piqp/src
 ^\.claude$
 ^CLAUDE\.md$
+^src/piqp/include/piqp/utils/ghc_filesystem\.hpp$
+^src/\.r_patched$
+^cleanup$
