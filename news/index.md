@@ -2,6 +2,8 @@
 
 ## piqp 0.6.2
 
+CRAN release: 2026-02-18
+
 - Update to v0.6.2 of the underlying PIQP library
 - Migrate from R6 to S7 OOP system
 - Inequality constraints are now double-sided: `h_l <= Gx <= h_u`

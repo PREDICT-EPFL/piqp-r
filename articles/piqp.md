@@ -245,7 +245,7 @@ str(sparse_sol)
 #>   ..$ update_time       : num 0
 #>   ..$ solve_time        : num 0
 #>   ..$ kkt_factor_time   : num 0
-#>   ..$ kkt_solve_time    : num 1522
+#>   ..$ kkt_solve_time    : num 1479
 #>   ..$ run_time          : num 0
 ```
 
