@@ -114,9 +114,9 @@ settings <- list(verbose = TRUE)
 # Solve with PIQP
 res <- solve_piqp(P, c, A, b, G, h_u = h_u, x_l = x_l, x_u = x_u, settings = settings)
 #> ----------------------------------------------------------
-#>                         PIQP v0.6.2                       
+#>                         PIQP v0.6.4                       
 #>                     (c) Roland Schwan                     
-#>    Ecole Polytechnique Federale de Lausanne (EPFL) 2025   
+#>    Ecole Polytechnique Federale de Lausanne (EPFL) 2026   
 #> ----------------------------------------------------------
 #> sparse backend (sparse_ldlt)
 #> variables n = 2, nzz(P upper triangular) = 2
