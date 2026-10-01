@@ -32,3 +32,4 @@
 ^src/piqp/include/piqp/utils/ghc_filesystem\.hpp$
 ^src/\.r_patched$
 ^cleanup$
+^\.vscode$

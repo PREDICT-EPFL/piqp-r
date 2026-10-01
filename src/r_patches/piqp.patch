@@ -1,0 +1,44 @@
+diff --git a/include/piqp/fwd.hpp b/include/piqp/fwd.hpp
+index 407ac58..7b0368d 100644
+--- a/include/piqp/fwd.hpp
++++ b/include/piqp/fwd.hpp
+@@ -6,6 +6,8 @@
+ // This source code is licensed under the BSD 2-Clause License found in the
+ // LICENSE file in the root directory of this source tree.
+ 
++// R interface patch: adds piqp_flush() macro for R_FlushConsole()
++
+ #ifndef PIQP_FWD_HPP
+ #define PIQP_FWD_HPP
+ 
+@@ -56,13 +58,17 @@
+ #ifdef MATLAB
+ #define piqp_print mexPrintf
+ #define piqp_eprint mexPrintf
++#define piqp_flush() ((void)0)
+ #elif defined R_LANG
+ #include <R_ext/Print.h>
++#include <R_ext/Utils.h>
+ #define piqp_print Rprintf
+ #define piqp_eprint REprintf
++#define piqp_flush() R_FlushConsole()
+ #else
+ #define piqp_print printf
+ #define piqp_eprint(...) fprintf(stderr, __VA_ARGS__)
++#define piqp_flush() fflush(stdout)
+ #endif
+ 
+ #endif //PIQP_FWD_HPP
+diff --git a/include/piqp/solver.tpp b/include/piqp/solver.tpp
+index bb8c349..8ac37d4 100644
+--- a/include/piqp/solver.tpp
++++ b/include/piqp/solver.tpp
+@@ -596,7 +596,7 @@ Status SolverBase<T, I, Preconditioner, MatrixType>::solve_impl()
+                 static_cast<double>(m_result.info.primal_step),
+                 static_cast<double>(m_result.info.dual_step)
+             );
+-            fflush(stdout);
++            piqp_flush();
+         }
+ 
+         if ((m_result.info.primal_res < m_settings.eps_abs || m_result.info.primal_res_rel < m_settings.eps_rel) &&

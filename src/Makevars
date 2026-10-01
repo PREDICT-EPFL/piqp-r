@@ -3,7 +3,7 @@ PKG_CPPFLAGS=-I./piqp/include -DR_LANG -DPIQP_STD_FILESYSTEM
 
 all: .r_patched
 
-.r_patched: r_patches/piqp/fwd.hpp r_patches/piqp/solver.hpp
-	cp r_patches/piqp/fwd.hpp piqp/include/piqp/fwd.hpp
-	cp r_patches/piqp/solver.hpp piqp/include/piqp/solver.hpp
+# Apply R-specific patches to the vendored PIQP sources (skipped if already applied)
+.r_patched: r_patches/piqp.patch
+	cd piqp && (patch -p1 -R -s -f --dry-run < ../r_patches/piqp.patch > /dev/null 2>&1 || patch -p1 -s < ../r_patches/piqp.patch)
 	touch .r_patched
