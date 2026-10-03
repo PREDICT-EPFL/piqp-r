@@ -1,4 +1,5 @@
 #!/bin/sh
 
 rm -f src/*.o src/*.so src/*.dll src/*.a src/.r_patched
-cd src && git checkout -- piqp/include/piqp/fwd.hpp piqp/include/piqp/solver.hpp 2>/dev/null
+cd src/piqp && git checkout -- include 2>/dev/null
+exit 0

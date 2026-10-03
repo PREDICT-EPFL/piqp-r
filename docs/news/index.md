@@ -1,5 +1,12 @@
 # Changelog
 
+## piqp 0.6.4
+
+- Update to v0.6.4 of the underlying PIQP library
+- Compatibility with Eigen 5 (replaces removed `EIGEN_NOEXCEPT` macro),
+  required for upcoming RcppEigen release
+  ([\#6](https://github.com/PREDICT-EPFL/piqp-r/issues/6))
+
 ## piqp 0.6.2
 
 CRAN release: 2026-02-18
