@@ -64,6 +64,16 @@ more user-friendly functions <code><a href="piqp.html">piqp()</a></code> and <co
 <dd><p>logical flag indicating if the dense solver is used</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>An S7 object of class <code>piqp_model</code> with properties <code>solver_ptr</code>
+(an external pointer to the C++ solver), <code>dims</code> (a named list with
+elements <code>n</code>, <code>p</code>, and <code>m</code> giving the number of variables, equality
+constraints, and inequality constraints), and <code>dense_backend</code> (a logical
+flag indicating whether the dense solver backend is in use). The object
+is used with <code><a href="https://rdrr.io/r/base/solve.html" class="external-link">base::solve()</a></code> to compute a solution and with
+<code><a href="https://rdrr.io/r/stats/update.html" class="external-link">stats::update()</a></code> to modify problem data in place.</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -13,6 +13,15 @@ piqp_model(solver_ptr = NULL, dims = list(), dense_backend = logical(0))
 
 \item{dense_backend}{logical flag indicating if the dense solver is used}
 }
+\value{
+An S7 object of class \code{piqp_model} with properties \code{solver_ptr}
+(an external pointer to the C++ solver), \code{dims} (a named list with
+elements \code{n}, \code{p}, and \code{m} giving the number of variables, equality
+constraints, and inequality constraints), and \code{dense_backend} (a logical
+flag indicating whether the dense solver backend is in use). The object
+is used with \code{\link[base:solve]{base::solve()}} to compute a solution and with
+\code{\link[stats:update]{stats::update()}} to modify problem data in place.
+}
 \description{
 An S7 class wrapping the PIQP C++ Solver. Users will never
 need to directly create instances of this class and should use the

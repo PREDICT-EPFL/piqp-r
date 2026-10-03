@@ -55,5 +55,6 @@ src/*.so
 .claude/
 CLAUDE.md
 docs/CLAUDE.html
+docs/CLAUDE.md
 ## Build stamp
 src/.r_patched

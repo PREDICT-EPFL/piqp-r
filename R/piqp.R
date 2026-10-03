@@ -19,6 +19,13 @@
 #' @param solver_ptr external pointer to the C++ solver object
 #' @param dims a named list with elements `n`, `p`, and `m`
 #' @param dense_backend logical flag indicating if the dense solver is used
+#' @return An S7 object of class `piqp_model` with properties `solver_ptr`
+#'   (an external pointer to the C++ solver), `dims` (a named list with
+#'   elements `n`, `p`, and `m` giving the number of variables, equality
+#'   constraints, and inequality constraints), and `dense_backend` (a logical
+#'   flag indicating whether the dense solver backend is in use). The object
+#'   is used with [base::solve()] to compute a solution and with
+#'   [stats::update()] to modify problem data in place.
 #' @export
 piqp_model <- S7::new_class("piqp_model",
   properties = list(

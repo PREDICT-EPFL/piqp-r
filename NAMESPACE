@@ -11,14 +11,18 @@ export(update_settings)
 import(Matrix)
 importFrom(Matrix,sparseMatrix)
 importFrom(Rcpp,evalCpp)
-importFrom(S7,class_any)
-importFrom(S7,class_list)
-importFrom(S7,class_logical)
-importFrom(S7,method)
-importFrom(S7,new_class)
-importFrom(S7,new_external_generic)
-importFrom(S7,new_generic)
-importFrom(S7,new_property)
-importFrom(methods,as)
-importFrom(methods,is)
+importFrom(S7,
+  class_any,
+  class_list,
+  class_logical,
+  method,
+  new_class,
+  new_external_generic,
+  new_generic,
+  new_property
+)
+importFrom(methods,
+  as,
+  is
+)
 useDynLib(piqp)

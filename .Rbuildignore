@@ -33,3 +33,4 @@
 ^src/\.r_patched$
 ^cleanup$
 ^\.vscode$
+^cran-comments\.md$
