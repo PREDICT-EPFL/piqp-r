@@ -1,9 +1,14 @@
-# On-demand sanitizer check, mirroring CRAN's gcc-ASAN/UBSAN and clang-UBSAN
+# On-demand sanitizer check, mirroring CRAN's gcc-UBSAN and clang-UBSAN
 # additional checks via the r-hub containers.
 #
+#   gcc16-ubsan  r-hub gcc16 image (Fedora 44, GCC 16, same as CRAN's
+#                gcc-UBSAN machine); piqp built with UBSan.
+#   gcc-asan     r-hub gcc-asan image (GCC 15); R and piqp with ASan+UBSan.
+#   clang-ubsan  r-hub clang-ubsan image; R and piqp with clang UBSan.
+#
 # Trigger from the Actions tab or with
-#   gh workflow run sanitizers.yaml -f image=gcc-asan
-#   gh workflow run sanitizers.yaml -f image=both -f ref=<commit>
+#   gh workflow run sanitizers.yaml
+#   gh workflow run sanitizers.yaml -f image=all -f ref=<commit>
 #
 # R CMD check itself reports OK even when a sanitizer fires (the diagnostics
 # only appear in the install, test, and vignette logs), so the final step
@@ -20,11 +25,12 @@ on:
       image:
         description: 'Sanitizer image'
         type: choice
-        default: gcc-asan
+        default: gcc16-ubsan
         options:
+          - gcc16-ubsan
           - gcc-asan
           - clang-ubsan
-          - both
+          - all
       ref:
         description: 'Git ref (branch, tag, or commit) of piqp-r to check. Empty = this branch.'
         type: string
@@ -39,16 +45,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: ${{ fromJSON(inputs.image == 'both' && '["gcc-asan", "clang-ubsan"]' || format('["{0}"]', inputs.image)) }}
+        image: ${{ fromJSON(inputs.image == 'all' && '["gcc16-ubsan", "gcc-asan", "clang-ubsan"]' || format('["{0}"]', inputs.image)) }}
 
     container:
-      image: ghcr.io/r-hub/containers/${{ matrix.image }}:latest
+      image: ghcr.io/r-hub/containers/${{ matrix.image == 'gcc16-ubsan' && 'gcc16' || matrix.image }}:latest
 
     env:
       # Same options CRAN uses: R itself leaks by design; print UBSan stacks.
       ASAN_OPTIONS: detect_leaks=0:alloc_dealloc_mismatch=0
       UBSAN_OPTIONS: print_stacktrace=1
       _R_CHECK_FORCE_SUGGESTS_: 'false'
+      # Keep the vignette rebuild output even when it succeeds, as CRAN does.
+      # CRAN's report of the LLT bug came from this log.
+      _R_CHECK_ALWAYS_LOG_VIGNETTE_OUTPUT_: 'true'
       OMP_THREAD_LIMIT: '2'
 
     steps:
@@ -56,7 +65,7 @@ jobs:
         shell: bash
         run: |
           if command -v dnf > /dev/null; then
-            dnf -y install git patch pandoc
+            dnf -y install git patch pandoc libubsan
           else
             apt-get update -qq
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git patch pandoc
@@ -72,13 +81,24 @@ jobs:
           path: pkg
 
       # Taken from this branch before switching refs, so it also applies when
-      # checking an older commit that predates the file.
-      - name: Install user Makevars (pattern-initialize automatic storage)
+      # checking an older commit that predates the files. Starts from any
+      # Makevars the image already points R_MAKEVARS_USER at (the gcc16 image
+      # does), so its CRAN-like flags are kept rather than silently replaced.
+      - name: Install user Makevars
         shell: bash
         run: |
           mkdir -p "$HOME/.R"
-          cp pkg/.github/Makevars.sanitizers "$HOME/.R/Makevars"
-          cat "$HOME/.R/Makevars"
+          mv_user="$HOME/.R/Makevars.sanitizers"
+          : > "$mv_user"
+          if [ -n "${R_MAKEVARS_USER:-}" ] && [ -f "$R_MAKEVARS_USER" ]; then
+            cat "$R_MAKEVARS_USER" >> "$mv_user"
+          fi
+          cat pkg/.github/Makevars.sanitizers >> "$mv_user"
+          if [ "${{ matrix.image }}" = "gcc16-ubsan" ]; then
+            cat pkg/.github/Makevars.ubsan >> "$mv_user"
+          fi
+          echo "R_MAKEVARS_USER=$mv_user" >> "$GITHUB_ENV"
+          cat "$mv_user"
 
       - name: Switch to requested ref
         if: inputs.ref != ''

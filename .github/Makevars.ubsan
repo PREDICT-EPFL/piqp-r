@@ -1,0 +1,14 @@
+# Appended to the user Makevars for the gcc16-ubsan job only.
+#
+# The r-hub gcc16 image has an unsanitized R-devel built with GCC 16 on
+# Fedora 44, the same toolchain as CRAN's gcc-UBSAN check. Build piqp itself
+# with UBSan and link it against libubsan, so the sanitizer runs inside any
+# R process that loads the package. Reports go to stderr and the workflow
+# fails on them, matching how CRAN reports (non-fatal, logged).
+CFLAGS += -fsanitize=undefined -fno-omit-frame-pointer
+CXXFLAGS += -fsanitize=undefined -fno-omit-frame-pointer
+CXX11FLAGS += -fsanitize=undefined -fno-omit-frame-pointer
+CXX14FLAGS += -fsanitize=undefined -fno-omit-frame-pointer
+CXX17FLAGS += -fsanitize=undefined -fno-omit-frame-pointer
+CXX20FLAGS += -fsanitize=undefined -fno-omit-frame-pointer
+LDFLAGS += -fsanitize=undefined
