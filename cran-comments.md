@@ -11,9 +11,9 @@ The dense backend's KKT constructor move-assigned a freshly constructed
 `Eigen::LLT`, whose `m_info` member is left uninitialized by the LLT
 constructors in released Eigen (both 3.4.x, as bundled in the current CRAN
 RcppEigen, and 5.0.x, as bundled in the forthcoming RcppEigen). The object
-is now initialized via `compute()` on an empty matrix. The fix is applied to
-the vendored PIQP sources through the package's patch file and has been
-proposed to the upstream PIQP library (PREDICT-EPFL/piqp#45).
+is now initialized by factorizing a full-size zero matrix. This is the fix
+merged into the upstream PIQP library (PREDICT-EPFL/piqp#45), applied to
+the vendored sources through the package's patch file.
 
 The fix was verified with a GCC 16 UBSan check on Fedora 44 (R-devel,
 r-hub gcc16 container), matching CRAN's gcc-UBSAN setup. That check
