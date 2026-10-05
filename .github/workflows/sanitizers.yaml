@@ -71,6 +71,15 @@ jobs:
           submodules: 'true'
           path: pkg
 
+      # Taken from this branch before switching refs, so it also applies when
+      # checking an older commit that predates the file.
+      - name: Install user Makevars (pattern-initialize automatic storage)
+        shell: bash
+        run: |
+          mkdir -p "$HOME/.R"
+          cp pkg/.github/Makevars.sanitizers "$HOME/.R/Makevars"
+          cat "$HOME/.R/Makevars"
+
       - name: Switch to requested ref
         if: inputs.ref != ''
         shell: bash

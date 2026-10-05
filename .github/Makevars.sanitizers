@@ -1,0 +1,14 @@
+# User Makevars installed as ~/.R/Makevars by .github/workflows/sanitizers.yaml.
+#
+# Fill uninitialized automatic storage with a byte pattern so that reads of
+# indeterminate values (for example an enum member a constructor forgot to
+# set) see values UBSan can flag, instead of whatever happens to be on the
+# stack. Without this the catch depends on compiler version and optimization
+# level: the Eigen::LLT m_info bug fixed in piqp 0.6.4.1 was reported by
+# CRAN's GCC 16 but missed by GCC 15 with -O2 -flto in the r-hub container.
+CFLAGS += -ftrivial-auto-var-init=pattern
+CXXFLAGS += -ftrivial-auto-var-init=pattern
+CXX11FLAGS += -ftrivial-auto-var-init=pattern
+CXX14FLAGS += -ftrivial-auto-var-init=pattern
+CXX17FLAGS += -ftrivial-auto-var-init=pattern
+CXX20FLAGS += -ftrivial-auto-var-init=pattern
