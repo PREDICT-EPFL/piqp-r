@@ -4,8 +4,12 @@
   backend's KKT constructor move-assigned a freshly constructed `Eigen::LLT`,
   whose `m_info` member released Eigen (3.4.x and 5.0.x) leaves
   uninitialized. The Cholesky object is now initialized via `compute()` on
-  an empty matrix. The same fix is being proposed to the upstream PIQP
-  library.
+  an empty matrix. The same fix has been proposed to the upstream PIQP
+  library (PREDICT-EPFL/piqp#45).
+* `R CMD build` with R-devel no longer leaves the `src/.r_patched` marker in
+  the tarball: a `clean` rule in `src/Makevars` now removes it.
+* New on-demand GitHub Actions workflow `sanitizers.yaml` that checks the
+  package in the r-hub gcc-asan and clang-ubsan containers.
 
 # piqp 0.6.4
 

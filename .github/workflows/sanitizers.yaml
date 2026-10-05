@@ -62,11 +62,24 @@ jobs:
             DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git patch pandoc
           fi
 
+      # Check out this branch with full history, then switch to the requested
+      # ref if one was given. Done in two steps so that abbreviated commit
+      # SHAs work (actions/checkout only accepts full SHAs in 'ref').
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
           submodules: 'true'
           path: pkg
+
+      - name: Switch to requested ref
+        if: inputs.ref != ''
+        shell: bash
+        working-directory: pkg
+        run: |
+          git config --global --add safe.directory "$PWD"
+          git checkout --detach "${{ inputs.ref }}"
+          git submodule update --init --recursive
+          git log --oneline -1
 
       - name: Session info
         shell: bash

@@ -7,3 +7,9 @@ all: .r_patched
 .r_patched: r_patches/piqp.patch
 	cd piqp && (patch -p1 -R -s -f --dry-run < ../r_patches/piqp.patch > /dev/null 2>&1 || patch -p1 -s < ../r_patches/piqp.patch)
 	touch .r_patched
+
+# R CMD build runs 'make clean' here after installing for vignettes. Remove
+# the marker so it does not end up in the tarball (R-devel no longer runs the
+# top-level 'cleanup' script during build when it is listed in .Rbuildignore).
+clean:
+	@rm -f .r_patched $(OBJECTS) $(SHLIB)
