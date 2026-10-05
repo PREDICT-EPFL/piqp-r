@@ -13,15 +13,22 @@ constructors in released Eigen (both 3.4.x, as bundled in the current CRAN
 RcppEigen, and 5.0.x, as bundled in the forthcoming RcppEigen). The object
 is now initialized via `compute()` on an empty matrix. The fix is applied to
 the vendored PIQP sources through the package's patch file and has been
-proposed to the upstream PIQP library.
+proposed to the upstream PIQP library (PREDICT-EPFL/piqp#45).
 
-The fix was verified locally by building the package with GCC 16 and
-`-fsanitize=undefined -fsanitize-undefined-trap-on-error`: the previous
-version traps in the dense KKT constructor, the fixed version runs clean.
+The fix was verified with a GCC 16 UBSan check on Fedora 44 (R-devel,
+r-hub gcc16 container), matching CRAN's gcc-UBSAN setup. That check
+reproduces the error above on 0.6.4 and is clean on 0.6.4.1. The r-hub
+gcc-asan and clang-ubsan containers are also clean on 0.6.4.1.
+
+This release also removes a `src/.r_patched` build marker that R-devel's
+`R CMD build` would otherwise include in the tarball.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 1 note
+
+* The NOTE is "Days since last update": this release follows 0.6.4
+  closely in order to fix the UBSAN issue reported by CRAN above.
 
 * Local: macOS arm64, R 4.6.1, `R CMD check --as-cran`
 * GitHub Actions: macOS (release), Windows (release), Ubuntu (devel,
