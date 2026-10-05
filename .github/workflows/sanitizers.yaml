@@ -1,0 +1,123 @@
+# On-demand sanitizer check, mirroring CRAN's gcc-ASAN/UBSAN and clang-UBSAN
+# additional checks via the r-hub containers.
+#
+# Trigger from the Actions tab or with
+#   gh workflow run sanitizers.yaml -f image=gcc-asan
+#   gh workflow run sanitizers.yaml -f image=both -f ref=<commit>
+#
+# R CMD check itself reports OK even when a sanitizer fires (the diagnostics
+# only appear in the install, test, and vignette logs), so the final step
+# greps every log under piqp.Rcheck and fails the job on any hit.
+
+name: sanitizers
+
+run-name: >-
+  sanitizers (${{ inputs.image }}) on ${{ inputs.ref || github.ref_name }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: 'Sanitizer image'
+        type: choice
+        default: gcc-asan
+        options:
+          - gcc-asan
+          - clang-ubsan
+          - both
+      ref:
+        description: 'Git ref (branch, tag, or commit) of piqp-r to check. Empty = this branch.'
+        type: string
+        default: ''
+
+jobs:
+  sanitizers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    name: ${{ matrix.image }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJSON(inputs.image == 'both' && '["gcc-asan", "clang-ubsan"]' || format('["{0}"]', inputs.image)) }}
+
+    container:
+      image: ghcr.io/r-hub/containers/${{ matrix.image }}:latest
+
+    env:
+      # Same options CRAN uses: R itself leaks by design; print UBSan stacks.
+      ASAN_OPTIONS: detect_leaks=0:alloc_dealloc_mismatch=0
+      UBSAN_OPTIONS: print_stacktrace=1
+      _R_CHECK_FORCE_SUGGESTS_: 'false'
+      OMP_THREAD_LIMIT: '2'
+
+    steps:
+      - name: Install system tools (git, patch, pandoc)
+        shell: bash
+        run: |
+          if command -v dnf > /dev/null; then
+            dnf -y install git patch pandoc
+          else
+            apt-get update -qq
+            DEBIAN_FRONTEND=noninteractive apt-get install -y -qq git patch pandoc
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: 'true'
+          path: pkg
+
+      - name: Session info
+        shell: bash
+        run: |
+          R --version | head -n 1
+          R -q -e 'cat(R.version$platform, "\n"); print(Sys.getenv(c("CC", "CXX")))'
+          R CMD config CXX17
+          R CMD config CXX17FLAGS
+
+      - name: Install dependencies
+        shell: bash
+        working-directory: pkg
+        run: |
+          R -q -e 'pak::local_install_deps(dependencies = TRUE)'
+
+      - name: Build
+        shell: bash
+        run: |
+          R CMD build --no-manual pkg
+          ls -l piqp_*.tar.gz
+
+      - name: Check
+        shell: bash
+        run: |
+          R CMD check --as-cran --no-manual piqp_*.tar.gz
+
+      - name: Fail on sanitizer diagnostics
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -d piqp.Rcheck ]; then
+            echo "::error::piqp.Rcheck not found; build or check did not run"
+            exit 1
+          fi
+          # UBSan: "runtime error:"; ASan/LSan/MSan: "ERROR: <X>Sanitizer".
+          pattern='runtime error:|ERROR: [A-Za-z]*Sanitizer|SUMMARY: [A-Za-z]*Sanitizer'
+          if grep -rIEn "$pattern" piqp.Rcheck > sanitizer-hits.txt; then
+            echo "::error::Sanitizer diagnostics found in piqp.Rcheck logs"
+            cat sanitizer-hits.txt
+            echo "----- context -----"
+            grep -rIEn -A 12 "$pattern" piqp.Rcheck | head -n 200
+            exit 1
+          fi
+          echo "No sanitizer diagnostics found."
+
+      - name: Upload check directory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: piqp.Rcheck-${{ matrix.image }}
+          path: |
+            piqp.Rcheck
+            sanitizer-hits.txt
+          if-no-files-found: ignore
