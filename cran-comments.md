@@ -1,11 +1,23 @@
-## piqp 0.6.4
+## piqp 0.6.4.1
 
-This release updates the vendored PIQP C++ library to v0.6.4, which removes
-the use of the `EIGEN_NOEXCEPT` macro that no longer exists in Eigen 5. This
-was requested by the RcppEigen maintainers (piqp-r issue #6) ahead of the
-RcppEigen update that bundles Eigen 5. The package has been checked against
-both the current CRAN RcppEigen (Eigen 3.4) and the development RcppEigen
-(Eigen 5.0.1).
+This is a maintenance release addressing the gcc-UBSAN issue reported by
+CRAN for piqp 0.6.4
+(https://www.stats.ox.ac.uk/pub/bdr/memtests/gcc-UBSAN/piqp/):
+
+    Eigen/src/Cholesky/LLT.h:66:49: runtime error: load of value 31578,
+    which is not a valid value for type 'ComputationInfo'
+
+The dense backend's KKT constructor move-assigned a freshly constructed
+`Eigen::LLT`, whose `m_info` member is left uninitialized by the LLT
+constructors in released Eigen (both 3.4.x, as bundled in the current CRAN
+RcppEigen, and 5.0.x, as bundled in the forthcoming RcppEigen). The object
+is now initialized via `compute()` on an empty matrix. The fix is applied to
+the vendored PIQP sources through the package's patch file and has been
+proposed to the upstream PIQP library.
+
+The fix was verified locally by building the package with GCC 16 and
+`-fsanitize=undefined -fsanitize-undefined-trap-on-error`: the previous
+version traps in the dense KKT constructor, the fixed version runs clean.
 
 ## R CMD check results
 

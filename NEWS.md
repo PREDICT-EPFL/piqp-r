@@ -1,3 +1,12 @@
+# piqp 0.6.4.1
+
+* Fix undefined behavior reported by CRAN's gcc-UBSAN checks: the dense
+  backend's KKT constructor move-assigned a freshly constructed `Eigen::LLT`,
+  whose `m_info` member released Eigen (3.4.x and 5.0.x) leaves
+  uninitialized. The Cholesky object is now initialized via `compute()` on
+  an empty matrix. The same fix is being proposed to the upstream PIQP
+  library.
+
 # piqp 0.6.4
 
 * Update to v0.6.4 of the underlying PIQP library
